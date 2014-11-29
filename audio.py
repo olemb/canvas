@@ -4,10 +4,29 @@ if sys.version_info.major < 3:
 
 import wave
 import atexit
+import audioop
 import pyaudio
 from pyaudio import PyAudio
 
 pa = None
+
+def get_silent_block():
+    return b'\x00' * get_block_size()
+
+
+def add_blocks(blocks):
+    """Return a block where with the sum of the samples on all blocks.
+
+    Takes an interable of blocks (byte strings). If no blocks are passed
+    a silent block (all zeroes) will be returned.
+    """
+    silence = get_silent_block()
+    blocksum = silence
+
+    for block in blocks:
+        blocksum = audioop.add(blocksum, block, 2)
+
+    return blocksum
 
 def get_block_size():
     """Return block size in bytes."""
