@@ -29,6 +29,7 @@ class ClipRecorder:
             block = self.stream.read(1024)
             self.size += len(block)
             self.outfile.writeframes(block)
+        self.stream.close()
         self.outfile.close()
         self._stop.set()
         self.stopped = True
