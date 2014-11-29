@@ -19,12 +19,15 @@ def add_blocks(blocks):
 
     Takes an interable of blocks (byte strings). If no blocks are passed
     a silent block (all zeroes) will be returned.
+
+    Treats None values as silent blocks.
     """
     silence = get_silent_block()
     blocksum = silence
 
     for block in blocks:
-        blocksum = audioop.add(blocksum, block, 2)
+        if block:
+            blocksum = audioop.add(blocksum, block, 2)
 
     return blocksum
 
