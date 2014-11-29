@@ -10,8 +10,7 @@ class ClipRecorder:
     def __init__(self, filename):
         self.filename = filename
         self.stream = audio.open_input()
-        self._stop = False
-        self._stop_event = Event()
+        self._stop = None
         self.stopped = False
         self.size = 0
         self.latency = self.stream.get_input_latency()
@@ -22,8 +21,8 @@ class ClipRecorder:
         self.thread.start()
 
     def stop(self):
-        self._stop = True
-        self._stop_event.wait()
+        self._stop = Event()
+        self._stop.wait()
 
     def _main(self):
         while not self._stop:
@@ -31,7 +30,7 @@ class ClipRecorder:
             self.size += len(block)
             self.outfile.writeframes(block)
         self.outfile.close()
-        self._stop_event.set()
+        self._stop.set()
         self.stopped = True
 
     def read(self):
@@ -103,5 +102,5 @@ class Transport:
 
 t = Transport()
 t.record('out.wav')
-time.sleep(10)
+time.sleep(1)
 t.stop()
