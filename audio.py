@@ -1,6 +1,13 @@
+import sys
+if sys.version_info.major < 3:
+    sys.exit('Requires Python 3')
+
 import wave
+import atexit
 import pyaudio
 from pyaudio import PyAudio
+
+pa = None
 
 def get_block_size():
     """Return block size in bytes."""
@@ -10,10 +17,17 @@ def get_block_nframes():
     """Return block size in frames."""
     return 256
 
-def _pa_init(self):
+def _pa_init():
     global pa
     if pa is None:
         pa = PyAudio()
+        atexit.register(_pa_terminate)
+
+def _pa_terminate():
+    global pa
+    if pa:
+        pa.terminate()
+        pa = None
 
 AUDIO_FORMAT = dict(format=pyaudio.paInt16, channels=2, rate=44100)
 
