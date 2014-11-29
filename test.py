@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import time
 from threading import Thread, Event
 import audio
@@ -15,7 +16,7 @@ class ClipRecorder:
         self.size = 0
         self.latency = self.stream.get_input_latency()
 
-        self.outfile = audio.open_wave_outfile(self.filename)
+        self.outfile = audio.open_wavefile(self.filename, 'wb')
 
         self.thread = Thread(target=self._main, daemon=True)
         self.thread.start()
@@ -35,7 +36,7 @@ class ClipRecorder:
 
     def read(self):
         """Read file and return as a byte string."""
-        return audio.read_wave(self.filename)
+        return audio.read_wavefile(self.filename)
 
     def __repr__(self):
         return '<WAV writer {}, {:.2} seconds>'.format(self.filename,
