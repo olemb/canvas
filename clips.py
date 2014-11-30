@@ -37,19 +37,22 @@ class Clip:
             num_blocks = math.ceil(end_frame / BLOCK_SIZE)
 
             self.audio = bytearray(num_blocks * BLOCK_SIZE)
-            i = start_frame * FRAME_SIZE
+
+            bytepos = start_frame * FRAME_SIZE
+            read_size = 4096  # Number of frames to read.
             while True:
-                block = infile.readframes(1024)
-                if not block:
+                data = infile.readframes(read_size)
+                if not data:
                     break
-                self.audio[i:i + len(block)] = block
+                self.audio[bytepos:bytepos+len(data)] = data
+                bytepos += len(data)
 
-            self.start_block = abs_start_frame // FRAMES_PER_BLOCK
-            self.end_block = self.start_block + num_blocks
-
+            self.start_block = int(abs_start_frame // FRAMES_PER_BLOCK)
+            self.end_block = int(self.start_block + num_blocks)
             
     def get_block(self, pos):
-        if self.start_block <= pos < self.end_block:
+        if pos >= self.start_block and pos < self.end_block:
+            pos -= self.start_block
             return self.audio[pos * BLOCK_SIZE:(pos + 1) * BLOCK_SIZE]
         else:
             return None
@@ -59,10 +62,12 @@ if __name__ == '__main__':
 
     clips = [
         Clip('clips/a.wav', start=0),
-        Clip('clips/b.wav', start=0),
-        Clip('clips/c.wav', start=0),
+        Clip('clips/a.wav', start=0.1),
+        #Clip('clips/b.wav', start=0),
+        Clip('clips/c.wav', start=-0.1),
     ]
 
     for pos in range(1000):
         block = audio.add_blocks(clip.get_block(pos) for clip in clips)
         out.write(block)
+
