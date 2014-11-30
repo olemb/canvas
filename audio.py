@@ -10,8 +10,37 @@ from pyaudio import PyAudio
 
 pa = None
 
-def get_silent_block():
-    return b'\x00' * get_block_size()
+BLOCK_SIZE = 1024
+
+FRAME_RATE = 44100
+SAMPLE_WIDTH = 2
+NUM_CHANNELS = 2
+BYTES_PER_FRAME = SAMPLE_WIDTH * NUM_CHANNELS
+SILENCE = b'\x00' * BLOCK_SIZE
+
+# Todo: not sure if these are correct.
+BYTES_PER_SECOND = FRAME_RATE * BYTES_PER_FRAME
+SECONDS_PER_BYTE = 1 / BYTES_PER_SECOND
+SECONDS_PER_BLOCK = BLOCK_SIZE * SECONDS_PER_BYTE
+BLOCKS_PER_SECOND = 1 / SECONDS_PER_BLOCK
+
+PA_AUDIO_FORMAT = dict(format=pyaudio.paInt16,
+                       channels=NUM_CHANNELS,
+                       rate=FRAME_RATE)
+
+
+def _pa_init():
+    global pa
+    if pa is None:
+        pa = PyAudio()
+        atexit.register(_pa_terminate)
+
+
+def _pa_terminate():
+    global pa
+    if pa:
+        pa.terminate()
+        pa = None
 
 
 def add_blocks(blocks):
@@ -22,8 +51,7 @@ def add_blocks(blocks):
 
     Treats None values as silent blocks.
     """
-    silence = get_silent_block()
-    blocksum = silence
+    blocksum = SILENCE
 
     for block in blocks:
         if block:
@@ -31,45 +59,27 @@ def add_blocks(blocks):
 
     return blocksum
 
-def get_block_size():
-    """Return block size in bytes."""
-    return 1024
-
-def get_block_nframes():
-    """Return block size in frames."""
-    return 256
-
-def _pa_init():
-    global pa
-    if pa is None:
-        pa = PyAudio()
-        atexit.register(_pa_terminate)
-
-def _pa_terminate():
-    global pa
-    if pa:
-        pa.terminate()
-        pa = None
-
-AUDIO_FORMAT = dict(format=pyaudio.paInt16, channels=2, rate=44100)
 
 def open_input():
     _pa_init()
-    return pa.open(input=True, **AUDIO_FORMAT)
+    return pa.open(input=True, **PA_AUDIO_FORMAT)
+
 
 def open_output():
     _pa_init()
-    return pa.open(output=True, **AUDIO_FORMAT)
+    return pa.open(output=True, **PA_AUDIO_FORMAT)
+
 
 def open_wavefile(filename, mode):
     if 'r' in mode:
         return wave.open(filename, mode)
     elif 'w' in mode:
         outfile = wave.open(filename, mode)
-        outfile.setnchannels(2)
-        outfile.setsampwidth(2)
-        outfile.setframerate(44100)  # Todo: why 2 here?
+        outfile.setnchannels(NUM_CHANNELS)
+        outfile.setsampwidth(SAMPLE_WIDTH)
+        outfile.setframerate(FRAMES_RATE)
         return outfile
+
 
 def read_wavefile(filename):
     """Read WAV file and return all data as a byte string."""
