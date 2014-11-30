@@ -98,10 +98,15 @@ class Transport:
         pass
 
 
-# if __name__ == '__main__':
-#     main()
-
-t = Transport()
-t.record('out.wav')
-time.sleep(3)
-t.stop()
+if __name__ == '__main__':
+    import sys
+    t = Transport()
+    print('Recording...')
+    t.record(sys.argv[1])
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        pass
+    t.stop()
+    print('Stopped.')
