@@ -15,11 +15,13 @@ BLOCK_SIZE = 1024
 FRAME_RATE = 44100
 SAMPLE_WIDTH = 2
 NUM_CHANNELS = 2
-BYTES_PER_FRAME = SAMPLE_WIDTH * NUM_CHANNELS
+FRAME_SIZE = SAMPLE_WIDTH * NUM_CHANNELS
 SILENCE = b'\x00' * BLOCK_SIZE
 
 # Todo: not sure if these are correct.
-BYTES_PER_SECOND = FRAME_RATE * BYTES_PER_FRAME
+FRAMES_PER_BLOCK = BLOCK_SIZE / FRAME_SIZE
+
+BYTES_PER_SECOND = FRAME_RATE * FRAME_SIZE
 SECONDS_PER_BYTE = 1 / BYTES_PER_SECOND
 SECONDS_PER_BLOCK = BLOCK_SIZE * SECONDS_PER_BYTE
 BLOCKS_PER_SECOND = 1 / SECONDS_PER_BLOCK
@@ -77,7 +79,7 @@ def open_wavefile(filename, mode):
         outfile = wave.open(filename, mode)
         outfile.setnchannels(NUM_CHANNELS)
         outfile.setsampwidth(SAMPLE_WIDTH)
-        outfile.setframerate(FRAMES_RATE)
+        outfile.setframerate(FRAME_RATE)
         return outfile
 
 

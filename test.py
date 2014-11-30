@@ -103,5 +103,5 @@ class Transport:
 
 t = Transport()
 t.record('out.wav')
-time.sleep(1)
+time.sleep(3)
 t.stop()
