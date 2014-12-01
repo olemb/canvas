@@ -167,8 +167,9 @@ class Timeline:
 
     def set_cursor(self, x, y):
         # (Don't allow dragging the cursor outside the screen.)
-        self.transport.pos = max(0, x / self.xscale)
-        self.transport.y = min(1, y / self.yscale)
+        self.transport.pos = max(0, (min(self.width, x) / self.xscale))
+        self.transport.y = max(0, min(1, y / self.yscale))
+        print(self.transport.pos)
 
     def save_screenshot(self, filename):
         self.surface.surface.write_to_png(filename)
