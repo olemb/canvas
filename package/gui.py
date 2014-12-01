@@ -4,9 +4,9 @@ from .timeline import Timeline
 from .transport import Transport
 
 class GUI(Gtk.Window):
-    def __init__(self):
+    def __init__(self, dirname):
         super(GUI, self).__init__()
-        self.transport = Transport()
+        self.transport = Transport(dirname)
         self.timeline = Timeline(self.transport)
 
         self.dragging_clip = None
@@ -146,5 +146,5 @@ class GUI(Gtk.Window):
     def quit(self, *_, **__):
         # Todo: save.
         self.transport.stop()
+        self.transport.save()
         Gtk.main_quit()
-

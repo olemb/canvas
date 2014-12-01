@@ -1,9 +1,11 @@
+import os
 from threading import Thread, Event
 from . import audio
 from .audio import BLOCKS_PER_SECOND, SECONDS_PER_BLOCK, SILENCE
 from .audio import BLOCK_SIZE, FRAME_SIZE, add_blocks
 from .clips import Clip
 from .filenames import make_filename
+from .savefile import read_savefile, write_savefile
 
 class ClipThread:
     def __enter__(self):
@@ -89,7 +91,11 @@ class ClipPlayer(ClipThread):
 
 
 class Transport:
-    def __init__(self):
+    def __init__(self, dirname=None):
+        self.dirname = dirname
+        self.savefilename = os.path.join(dirname, 'clips.json')
+        if not os.path.exists(dirname):
+            os.mkdir(dirname)
         self.clips = []
         self.y = 0.9
 
@@ -159,3 +165,9 @@ class Transport:
                 keep.append(clip)
 
         self.clips = keep
+
+    def load(self):
+        self.clips = read_savefile(self.savefilename)
+
+    def save(self):
+        write_savefile(self.savefilename, self.clips)
