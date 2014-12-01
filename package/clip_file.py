@@ -10,6 +10,11 @@ def read_clip_file(filename):
 
     with open(filename) as infile:
         for fclip in json.load(infile).get('clips', ()):
+            if not 'filename' in fclip:
+                continue
+
+            fclip['filename'] = os.path.join(dirname, fclip['filename'])
+
             fclip = {k: v for k, v in fclip.items() if k in valid_arguments}
             clips.append(Clip(load=False, **fclip))
 

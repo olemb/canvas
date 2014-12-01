@@ -1,0 +1,33 @@
+{
+    "clips": [
+        {
+            "filename": "a.wav"
+            ,
+            "start": 0.3
+            ,
+            "y": 0.1
+            ,
+            "muted": false
+        }
+        ,
+        {
+            "filename": "a.wav"
+            ,
+            "start": 1.0
+            ,
+            "y": 0.9
+            ,
+            "muted": false
+        }
+    ]
+    ,
+    "annotations": [
+        {
+            "text": "This is a test."
+            ,
+            "start": 1.0
+            ,
+            "y": 0.85
+        }
+    ]
+}

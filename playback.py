@@ -9,8 +9,8 @@ from package.audio import SECONDS_PER_BLOCK
 
 def main():
     clips = [
-        Clip('clips/a.wav', start=0.1),
-        Clip('clips/a.wav', start=1.8),
+        Clip('testclips/a.wav', start=0.1),
+        Clip('testclips/a.wav', start=1.8),
         # Clip('clips/b.wav', start=0),
         # Clip('clips/c.wav', start=1),
     ]
