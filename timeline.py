@@ -75,4 +75,4 @@ draw_clip(10, 100, 0.8, 'muted')
 draw_cursor(0.5, 0.5)
 # draw_cursor(0.7, 0.9, recording=True)
 
-surface.write_to_png("example.png") # Output to PNG
+surface.write_to_png("timeline.png") # Output to PNG
