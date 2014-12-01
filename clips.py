@@ -1,6 +1,20 @@
 import math
 import audio
 from audio import FRAME_RATE, BLOCK_SIZE, FRAME_SIZE, FRAMES_PER_BLOCK
+from audio import BLOCKS_PER_SECOND
+
+def _allocate_buffer(start, nframes):
+    # Start padding in frames.
+    start_padding = math.floor((start * FRAME_RATE) % 1)
+    total_nframes = (start_padding + nframes)
+    num_blocks = total_nframes / FRAMES_PER_BLOCK
+    if num_blocks % 1:
+        num_blocks += 1
+    num_blocks = int(num_blocks)
+
+    return {'length': nframes / FRAME_RATE,
+            'buffer': bytearray(num_blocks * BLOCK_SIZE),
+            'start_byte': start_padding * FRAME_SIZE}
 
 class Clip:
     @classmethod
@@ -24,23 +38,13 @@ class Clip:
 
     def _load(self):
         with audio.open_wavefile(self.filename, 'rb') as infile:
-            """
-            self.end = self.start + (infile.getnframes() / FRAME_RATE)
+            nframes = infile.getnframes()
+            values = _allocate_buffer(self.start, nframes)
 
-            frames_per_block = BLOCK_SIZE / FRAME_SIZE
-            abs_start_frame = math.floor(self.start * FRAME_RATE)
+            self.audio = values['buffer']
             
-            # Start frame within buffer.
-            start_frame = abs_start_frame % FRAMES_PER_BLOCK
-            start_frame = int(start_frame)
-
-            end_frame = start_frame + infile.getnframes()
-            num_blocks = math.ceil(end_frame / BLOCK_SIZE)
-
-            self.audio = bytearray(num_blocks * BLOCK_SIZE)
-
-            bytepos = start_frame * FRAME_SIZE
-            read_size = 4096  # Number of frames to read.
+            bytepos = values['start_byte']
+            read_size = 1024
             while True:
                 data = infile.readframes(read_size)
                 if not data:
@@ -48,30 +52,30 @@ class Clip:
                 self.audio[bytepos:bytepos+len(data)] = data
                 bytepos += len(data)
 
-            self.start_block = int(abs_start_frame // FRAMES_PER_BLOCK)
-            self.end_block = int(self.start_block + num_blocks)
-            """
-            pass
+            self.length = nframes * FRAME_RATE
+            self.start_block = int(self.start * BLOCKS_PER_SECOND)
+            self.num_blocks = int(len(self.audio) / BLOCK_SIZE)
             
     def get_block(self, pos):
         pos -= self.start_block
         if 0 <= pos < self.length:
-            pos -= self.start_block
             return self.audio[pos * BLOCK_SIZE:(pos + 1) * BLOCK_SIZE]
         else:
             return None
 
 if __name__ == '__main__':
+    from audio import SECONDS_PER_BLOCK
+
     out = audio.open_output()
 
     clips = [
         Clip('clips/a.wav', start=0),
-        Clip('clips/a.wav', start=0.1),
-        #Clip('clips/b.wav', start=0),
-        Clip('clips/c.wav', start=-0.1),
+        Clip('clips/a.wav', start=1.8),
+        # Clip('clips/b.wav', start=0),
+        # Clip('clips/c.wav', start=1),
     ]
 
-    for pos in range(1000):
+    for pos in range(10000):
+        print(pos * SECONDS_PER_BLOCK)
         block = audio.add_blocks(clip.get_block(pos) for clip in clips)
         out.write(block)
-

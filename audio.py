@@ -19,7 +19,7 @@ FRAME_SIZE = SAMPLE_WIDTH * NUM_CHANNELS
 SILENCE = b'\x00' * BLOCK_SIZE
 
 # Todo: not sure if these are correct.
-FRAMES_PER_BLOCK = BLOCK_SIZE / FRAME_SIZE
+FRAMES_PER_BLOCK = int(BLOCK_SIZE / FRAME_SIZE)
 
 BYTES_PER_SECOND = FRAME_RATE * FRAME_SIZE
 SECONDS_PER_BYTE = 1 / BYTES_PER_SECOND
@@ -29,7 +29,6 @@ BLOCKS_PER_SECOND = 1 / SECONDS_PER_BLOCK
 PA_AUDIO_FORMAT = dict(format=pyaudio.paInt16,
                        channels=NUM_CHANNELS,
                        rate=FRAME_RATE)
-
 
 def _pa_init():
     global pa
