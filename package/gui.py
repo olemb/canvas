@@ -56,6 +56,14 @@ class GUI(Gtk.Window):
         key = event.keyval
         if key == Gdk.KEY_BackSpace:
             self.transport.delete()
+        elif key == Gdk.KEY_Left:
+            self.transport.pos -= 1
+        elif key == Gdk.KEY_Right:
+            self.transport.pos += 1
+        elif key == Gdk.KEY_Up:
+            self.transport.y -= 0.05
+        elif key == Gdk.KEY_Down:
+            self.transport.y += 0.05
         self.draw()
 
     def on_key_release(self, widget, event):

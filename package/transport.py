@@ -138,6 +138,7 @@ class Transport:
 
     def delete(self):
         # Todo: handle deleting recording clip.
+        # Todo: delete file?
         keep = []
         for clip in self.clips:
             if clip.selected:

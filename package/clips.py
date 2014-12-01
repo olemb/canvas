@@ -85,6 +85,8 @@ def get_start_and_end(clips):
 
 
 def save_mix(filename, clips):
+    clips = [clip for clip in clips if not clip.muted]
+
     start, end = get_start_and_end(clips)
     start_block = math.floor(start * BLOCKS_PER_SECOND)
     end_block = math.ceil(end * BLOCKS_PER_SECOND)
