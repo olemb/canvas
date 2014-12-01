@@ -81,11 +81,7 @@ class GUI(Gtk.Window):
             clip.y = max(0, clip.y)
             clip.y = min(1, clip.y)
         elif self.dragging_cursor:
-            self.transport.pos = (self.last_mouse_x * self.timeline.xscale)
-            self.transport.y = (self.last_mouse_y * self.timeline.yscale)
-            # Don't allow dragging the cursor outside the screen.
-            self.transport.y = max(0, self.transport.y)
-            self.transport.y = min(1, self.transport.y)
+            self.timeline.set_cursor(self.last_mouse_x, self.last_mouse_y)
             # Todo: scrub.
 
         self.draw()

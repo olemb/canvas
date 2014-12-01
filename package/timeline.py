@@ -147,7 +147,7 @@ class Timeline:
         # Horizontal.
         height = CLIP_HEIGHT + 4
         x = 0
-        y *= self.height
+        y = (y * self.height) - (CLIP_HEIGHT / 2)
         ctx.set_source_rgba(0.5, 0.5, 0.5, 0.15)
         ctx.rectangle(x, y, self.width, height)
         ctx.fill()
@@ -166,9 +166,9 @@ class Timeline:
         return clips
 
     def set_cursor(self, x, y):
-        self.transport.pos = x / self.xscale
-        self.transport.y = y / self.xscale
+        # (Don't allow dragging the cursor outside the screen.)
+        self.transport.pos = max(0, x / self.xscale)
+        self.transport.y = min(1, y / self.yscale)
 
     def save_screenshot(self, filename):
         self.surface.surface.write_to_png(filename)
-
