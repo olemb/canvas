@@ -8,7 +8,7 @@ def read_savefile(filename):
     if not os.path.exists(filename):
         return []
 
-    valid_arguments = {'filename', 'start', 'x', 'muted'}
+    valid_arguments = {'filename', 'start', 'y', 'muted'}
     clips = []
 
     with open(filename) as infile:
@@ -33,5 +33,4 @@ def write_savefile(filename, clips):
         for clip in clips]
 
     with open(filename, 'wt') as outfile:
-        json.dump({'clips': fclips}, outfile)
-
+        json.dump({'clips': fclips}, outfile, indent=2, sort_keys=True)
