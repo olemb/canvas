@@ -10,13 +10,13 @@ class Clip:
     def __init__(self, filename, start=0, y=0, muted=False):
         self.filename = filename
         self.start = start
-        self.end = None
+        self.length = None
         self.y = 0
         self.muted = muted
         self.recording = False
 
         self.start_block = None
-        self.end_block = None
+        self.num_blocks = None
 
         self.audio = None
 
@@ -24,6 +24,7 @@ class Clip:
 
     def _load(self):
         with audio.open_wavefile(self.filename, 'rb') as infile:
+            """
             self.end = self.start + (infile.getnframes() / FRAME_RATE)
 
             frames_per_block = BLOCK_SIZE / FRAME_SIZE
@@ -49,9 +50,12 @@ class Clip:
 
             self.start_block = int(abs_start_frame // FRAMES_PER_BLOCK)
             self.end_block = int(self.start_block + num_blocks)
+            """
+            pass
             
     def get_block(self, pos):
-        if pos >= self.start_block and pos < self.end_block:
+        pos -= self.start_block
+        if 0 <= pos < self.length:
             pos -= self.start_block
             return self.audio[pos * BLOCK_SIZE:(pos + 1) * BLOCK_SIZE]
         else:
