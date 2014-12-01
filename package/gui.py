@@ -8,6 +8,7 @@ class GUI(Gtk.Window):
         super(GUI, self).__init__()
         self.transport = Transport(dirname)
         self.timeline = Timeline(self.transport)
+        self.done = False
 
         self.dragging_clip = None
         self.clip_drag_distance = 0
@@ -144,7 +145,9 @@ class GUI(Gtk.Window):
         Gtk.main()
 
     def quit(self, *_, **__):
-        # Todo: save.
-        self.transport.stop()
-        self.transport.save()
-        Gtk.main_quit()
+        if not self.done:
+            # Todo: save.
+            self.transport.stop()
+            self.transport.save()
+            Gtk.main_quit()
+            self.done = True

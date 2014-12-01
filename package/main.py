@@ -13,8 +13,10 @@ def main(dirname):
     gui = GUI(dirname)
     gui.transport.load()
     try:
-        gui.run()
-    except KeyboardInterrupt:
-        pass
+        
+        try:
+            gui.run()
+        except KeyboardInterrupt:
+            pass
     finally:
         gui.quit()
