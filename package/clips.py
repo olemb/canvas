@@ -1,7 +1,7 @@
 import math
-import audio
-from audio import FRAME_RATE, BLOCK_SIZE, FRAME_SIZE, FRAMES_PER_BLOCK
-from audio import BLOCKS_PER_SECOND
+from . import audio
+from .audio import FRAME_RATE, BLOCK_SIZE, FRAME_SIZE, FRAMES_PER_BLOCK
+from .audio import BLOCKS_PER_SECOND
 
 def _allocate_buffer(start, nframes):
     # Start padding in frames.
@@ -62,20 +62,3 @@ class Clip:
             return self.audio[pos * BLOCK_SIZE:(pos + 1) * BLOCK_SIZE]
         else:
             return None
-
-if __name__ == '__main__':
-    from audio import SECONDS_PER_BLOCK
-
-    out = audio.open_output()
-
-    clips = [
-        Clip('clips/a.wav', start=0),
-        Clip('clips/a.wav', start=1.8),
-        # Clip('clips/b.wav', start=0),
-        # Clip('clips/c.wav', start=1),
-    ]
-
-    for pos in range(10000):
-        print(pos * SECONDS_PER_BLOCK)
-        block = audio.add_blocks(clip.get_block(pos) for clip in clips)
-        out.write(block)

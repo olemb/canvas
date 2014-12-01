@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-import time
 from threading import Thread, Event
-import audio
+from . import audio
 
 # print('Input latency: {}'.format(instream.get_input_latency()))
 # print('Output latency: {}'.format(outstream.get_output_latency()))
@@ -96,17 +94,3 @@ class Transport:
     def skip(self, n):
         self._stop_recording()
         pass
-
-
-if __name__ == '__main__':
-    import sys
-    t = Transport()
-    print('Recording...')
-    t.record(sys.argv[1])
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        pass
-    t.stop()
-    print('Stopped.')
