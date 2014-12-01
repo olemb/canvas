@@ -20,7 +20,7 @@ class Clip:
     def from_json(cls, obj):
         return cls(**obj)
 
-    def __init__(self, filename, start=0, y=0, muted=False):
+    def __init__(self, filename, start=0, y=0, muted=False, load=True):
         self.filename = filename
         self.start = start
         self.length = None
@@ -33,9 +33,10 @@ class Clip:
 
         self.audio = None
 
-        self._load()
+        if load:
+            self.load()
 
-    def _load(self):
+    def load(self):
         with open_wavefile(self.filename, 'rb') as infile:
             nframes = infile.getnframes()
             values = _allocate_buffer(self.start, nframes)
