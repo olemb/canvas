@@ -63,7 +63,6 @@ class ClipPlayer(ClipThread):
 
         self.latency = self.stream.get_output_latency()
         self.play_ahead = round(self.latency * BLOCKS_PER_SECOND)
-        print(self.play_ahead)
 
         self.thread = Thread(target=self._main, daemon=True)
         self.thread.start()
@@ -92,7 +91,7 @@ class Transport:
     def __init__(self):
         self.clips = []
         self.pos = 0  # Position (in seconds)
-        self.y = 0
+        self.y = 0.9
 
         self.player = None
         self.recorder = None

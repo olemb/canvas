@@ -82,11 +82,8 @@ class Timeline:
         ctx = self.context
 
         ctx.save()
-        for clip in clips:
-            box = self.draw_clip(clip)
-            self.collision_boxes.append((box, clip))
+        self.collision_boxes = [(self.draw_clip(clip), clip) for clip in clips]
         self.collision_boxes.reverse()
-
         self.draw_cursor()
         ctx.restore()
 
@@ -161,7 +158,6 @@ class Timeline:
         for (box, clip) in self.collision_boxes:
             (cx, cy, width, height) = box
             if (cx <= x <= (cx + width)) and (cy <= y <= (cy + height)):
-                print(box)
                 clips.append(clip)
         return clips
 
@@ -169,7 +165,6 @@ class Timeline:
         # (Don't allow dragging the cursor outside the screen.)
         self.transport.pos = max(0, (min(self.width, x) / self.xscale))
         self.transport.y = max(0, min(1, y / self.yscale))
-        print(self.transport.pos)
 
     def save_screenshot(self, filename):
         self.surface.surface.write_to_png(filename)

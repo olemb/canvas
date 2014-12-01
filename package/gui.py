@@ -8,7 +8,7 @@ class GUI(Gtk.Window):
         super(GUI, self).__init__()
         self.transport = Transport()
         self.timeline = Timeline(self.transport)
-        self.init_ui()
+        self.init()
 
         self.dragging_clip = None
         self.clip_drag_distance = 0
@@ -19,7 +19,7 @@ class GUI(Gtk.Window):
         self.dragging_cursor = False
         self.mouse_moved = False
 
-    def init_ui(self):
+    def init(self):
         self.area = Gtk.DrawingArea()
         self.area.set_size_request(1000, 600)
         self.area.add_events(Gdk.EventMask.ALL_EVENTS_MASK)
