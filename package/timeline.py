@@ -14,10 +14,11 @@ COLORS = {
 }
 CLIP_HEIGHT = 30
 MIN_DRAW_LENGTH = 60 * 1
+MIN_CLIP_LENGTH = 16
 
 class Timeline:
-    def __init__(self, clips):
-        self.clips = clips
+    def __init__(self, transport):
+        self.transport = transport
         self.surface = None
         self.context = None
         self.width = None
@@ -40,7 +41,8 @@ class Timeline:
             self.surface.finish()
             self._make_surface(width, height)
 
-        _, end = get_start_and_end(self.clips)
+        clips = self.transport.clips
+        _, end = get_start_and_end(clips)
         end = max(MIN_DRAW_LENGTH, end)
         self.width = width
         self.height = height
@@ -52,12 +54,12 @@ class Timeline:
         ctx = self.context
 
         ctx.save()
-        for clip in self.clips:
+        for clip in clips:
             box = self.draw_clip(clip)
             self.collision_boxes.append((box, clip))
         self.collision_boxes.reverse()
 
-        self.draw_cursor(pos=10, y=0.5, recording=False)
+        self.draw_cursor()
         ctx.restore()
 
         return self.surface
@@ -81,7 +83,7 @@ class Timeline:
         # Todo: save box for collision detection.
         box = (clip.start * self.xscale,
                (clip.y * self.yscale) - (CLIP_HEIGHT / 2),
-               max(16, clip.length * self.xscale),
+               max(MIN_CLIP_LENGTH, clip.length * self.xscale),
                CLIP_HEIGHT)
         ctx.save()
         # ctx.set_antialias(cairo.ANTIALIAS_NONE)
@@ -96,27 +98,31 @@ class Timeline:
 
         return box
 
-    def draw_cursor(self, pos, y, recording=False):
+    def draw_cursor(self):
+        pos = self.transport.pos
+        y = self.transport.y
+
         ctx = self.context
-        x = pos * self.xscale
-        y = y * self.height
         ctx.save()
-        if recording:
+        if self.transport.recording:
             ctx.set_source_rgba(*COLORS['record-cursor'])
         else:
             ctx.set_source_rgba(*COLORS['play-cursor'])
 
-        # Horizontal.
-        ctx.set_line_width(1)
-        ctx.move_to(0, y)
-        ctx.line_to(self.width, y)
-        ctx.stroke()
-
         # Vertical.
+        x = self.transport.pos * self.xscale
         ctx.set_line_width(2)
         ctx.move_to(x, 0)
         ctx.line_to(x, self.height)
         ctx.stroke()
+
+        # Horizontal.
+        height = CLIP_HEIGHT + 4
+        x = 0
+        y *= self.height
+        ctx.set_source_rgba(0.5, 0.5, 0.5, 0.15)
+        ctx.rectangle(x, y, self.width, height)
+        ctx.fill()
 
         ctx.restore()
 

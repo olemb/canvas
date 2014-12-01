@@ -92,6 +92,7 @@ class Transport:
     def __init__(self):
         self.clips = []
         self.pos = 0  # Position (in seconds)
+        self.y = 0
 
         self.player = None
         self.recorder = None
