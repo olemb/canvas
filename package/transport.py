@@ -128,7 +128,7 @@ class Transport:
     def start_recording(self):
         self.stop_recording()
         if self.recorder is None:
-            filename = make_filename('testclips')
+            filename = make_filename(self.dirname)
             clip = Clip(filename, start=self.pos, y=self.y, load=False)
             self.deselect_all()
             clip.selected = True
