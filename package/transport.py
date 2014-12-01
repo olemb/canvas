@@ -3,7 +3,7 @@ from threading import Thread, Event
 from . import audio
 from .audio import BLOCKS_PER_SECOND, SECONDS_PER_BLOCK, SILENCE
 from .audio import BLOCK_SIZE, FRAME_SIZE, add_blocks
-from .clips import Clip
+from .clips import Clip, save_mix
 from .filenames import make_filename
 from .savefile import read_savefile, write_savefile
 
@@ -155,12 +155,10 @@ class Transport:
 
     def delete(self):
         self.stop_recording()
-        # Todo: handle deleting recording clip.
-        # Todo: delete file?
         keep = []
         for clip in self.clips:
             if clip.selected:
-                clip.deleted = clip
+                clip.delete()
             else:
                 keep.append(clip)
 
@@ -171,3 +169,6 @@ class Transport:
 
     def save(self):
         write_savefile(self.savefilename, self.clips)
+
+    def save_mix(self):
+        save_mix(os.path.join(self.dirname, 'mix.wav'), self.clips)

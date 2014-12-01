@@ -147,7 +147,8 @@ class GUI(Gtk.Window):
     def quit(self, *_, **__):
         if not self.done:
             # Todo: save.
+            Gtk.main_quit()
             self.transport.stop()
             self.transport.save()
-            Gtk.main_quit()
+            self.transport.save_mix()
             self.done = True

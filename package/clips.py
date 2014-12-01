@@ -32,6 +32,7 @@ class Clip:
         self.muted = muted
         self.recording = False
         self.selected = False
+        self.deleted = False
 
         self.start_block = 0
         self.num_blocks = 0
@@ -69,6 +70,10 @@ class Clip:
             return self.audio[pos * BLOCK_SIZE:(pos + 1) * BLOCK_SIZE]
         else:
             return None
+
+    def delete(self):
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
 
     def __repr__(self):
         filename = os.path.basename(self.filename)
