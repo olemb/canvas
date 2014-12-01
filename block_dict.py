@@ -36,4 +36,3 @@ with audio.open_wavefile('out.wav', 'rb') as infile:
 
 print(audio.add_blocks(list(blocks.values())))
 print(audio.add_blocks([]))
-
