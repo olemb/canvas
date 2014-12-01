@@ -13,9 +13,11 @@ COLORS = {
     'record-cursor': (1, 0, 0, 1),
 }
 CLIP_HEIGHT = 30
+MIN_DRAW_LENGTH = 60 * 1
 
 class Timeline:
-    def __init__(self):
+    def __init__(self, clips):
+        self.clips = clips
         self.surface = None
         self.context = None
         self.width = None
@@ -38,26 +40,19 @@ class Timeline:
             self.surface.finish()
             self._make_surface(width, height)
 
+        _, end = get_start_and_end(self.clips)
+        end = max(MIN_DRAW_LENGTH, end)
         self.width = width
         self.height = height
-        self.xscale = 100
+        self.xscale = 1 / (end) * self.width
         self.yscale = self.height
-
-        from .clips import Clip
-        clips = [
-            Clip('', start=1, length=2, y=0.5, load=False),
-            Clip('', start=1.2, length=2, y=0.53, load=False),
-            ]
-        clips[1].selected = True
-        
-        _, end = get_start_and_end(clips)
 
         self.draw_background()
 
         ctx = self.context
 
         ctx.save()
-        for clip in clips:
+        for clip in self.clips:
             box = self.draw_clip(clip)
             self.collision_boxes.append((box, clip))
         self.collision_boxes.reverse()
@@ -86,7 +81,7 @@ class Timeline:
         # Todo: save box for collision detection.
         box = (clip.start * self.xscale,
                (clip.y * self.yscale) - (CLIP_HEIGHT / 2),
-               clip.length * self.xscale,
+               max(16, clip.length * self.xscale),
                CLIP_HEIGHT)
         ctx.save()
         # ctx.set_antialias(cairo.ANTIALIAS_NONE)
