@@ -32,7 +32,7 @@ class GUI(Gtk.Window):
         self.area.connect('motion-notify-event', self.on_mouse_motion)
         self.add(self.area)
 
-        self.connect('key-press-event', self.on_key_down)
+        self.connect('key-press-event', self.on_press_event)
 
         self.width = 1000
         self.height = 600
@@ -62,7 +62,7 @@ class GUI(Gtk.Window):
         context.set_source_surface(self.timeline.render(width, height))
         context.paint()
 
-    def on_key_down(self, widget, event):
+    def on_press_event(self, widget, event):
         key = event.keyval
         if key == Gdk.KEY_BackSpace:
             self.transport.delete()
@@ -85,9 +85,6 @@ class GUI(Gtk.Window):
             else:
                 self.transport.play()
         self.draw()
-
-    def on_key_release(self, widget, event):
-        pass
 
     def on_button_press(self, widget, event):
         if event.button == 1:
@@ -130,10 +127,10 @@ class GUI(Gtk.Window):
         # Todo: shift?
 
         if self.dragging_clip:
-            for clip in self.transport.clips:
-                if clip is not self.dragging_clip:
-                    clip_selected = False
             if not self.mouse_moved:
+                clip = self.dragging_clip
+                selected = clip.selected
+                self.transport.deselect_all()
                 clip.selected = True
             self.dragging_clip = None
         elif self.dragging_cursor:
