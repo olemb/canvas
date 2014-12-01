@@ -108,6 +108,7 @@ class Transport:
 
     @pos.setter
     def pos(self, pos):
+        self.stop_recording()
         self.block_pos = max(0, round(pos * BLOCKS_PER_SECOND))
 
     @property
@@ -123,6 +124,8 @@ class Transport:
         if self.recorder is None:
             filename = make_filename('testclips')
             clip = Clip(filename, start=self.pos, y=self.y, load=False)
+            self.deselect_all()
+            clip.selected = True
             self.clips.append(clip)
             self.play()
             self.recorder = ClipRecorder(clip)
@@ -145,6 +148,7 @@ class Transport:
             self.player = None
 
     def delete(self):
+        self.stop_recording()
         # Todo: handle deleting recording clip.
         # Todo: delete file?
         keep = []

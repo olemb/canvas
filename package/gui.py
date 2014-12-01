@@ -40,7 +40,7 @@ class GUI(Gtk.Window):
         self.set_title('Timeline')
         self.resize(self.width, self.height)
         self.set_position(Gtk.WindowPosition.CENTER)
-        self.connect('delete-event', Gtk.main_quit)
+        self.connect('delete-event', self.quit)
 
         self.on_timer()
 
@@ -145,3 +145,9 @@ class GUI(Gtk.Window):
 
     def run(self):
         Gtk.main()
+
+    def quit(self, *_, **__):
+        # Todo: save.
+        self.transport.stop()
+        Gtk.main_quit()
+
