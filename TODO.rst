@@ -4,4 +4,5 @@
 * threads should handle keyboard interrupts.
 * handle missing audio files somehow.
 * double check latency compensation.
+* move recording clip up and down along with the cursor while recording.
 
