@@ -1,6 +1,9 @@
 from threading import Thread, Event
 from . import audio
-from .audio import BLOCKS_PER_SECOND, SECONDS_PER_BLOCK, SILENCE, add_blocks
+from .audio import BLOCKS_PER_SECOND, SECONDS_PER_BLOCK, SILENCE
+from .audio import BLOCK_SIZE, FRAME_SIZE, add_blocks
+from .clips import Clip
+from .filenames import make_filename
 
 class ClipThread:
     def __enter__(self):
@@ -11,14 +14,12 @@ class ClipThread:
         return False
 
 class ClipRecorder(ClipThread):
-    def __init__(self, filename):
-        self.filename = filename
-        self.stream = audio.open_input()
+    def __init__(self, clip):
+        self.clip = clip
+        self.clip.recording = True
+        self.audio_in = audio.open_input()
         self.stop_event = None
-        self.size = 0
-        self.latency = self.stream.get_input_latency()
-
-        self.outfile = audio.open_wavefile(self.filename, 'wb')
+        self.latency = self.audio_in.get_input_latency()
 
         self.thread = Thread(target=self._main, daemon=True)
         self.thread.start()
@@ -28,12 +29,20 @@ class ClipRecorder(ClipThread):
         self.stop_event.wait()
 
     def _main(self):
+        self.outfile = audio.open_wavefile(self.clip.filename, 'wb')
+
+        read_size = int(BLOCK_SIZE / FRAME_SIZE)
+
+        num_blocks = 0
         while not self.stop_event:
-            block = self.stream.read(1024)
-            self.size += len(block)
+            block = self.audio_in.read(read_size)
+            num_blocks += 1
+            self.clip.length = num_blocks * SECONDS_PER_BLOCK
             self.outfile.writeframes(block)
-        self.stream.close()
+        self.audio_in.close()
         self.outfile.close()
+        self.clip.recording = False
+        self.clip.load()
         self.stop_event.set()
 
     def read(self):
@@ -50,11 +59,11 @@ class ClipPlayer(ClipThread):
     # (Blocks will be used internally.)
     def __init__(self, transport):
         self.transport = transport
-        self.stream = audio.open_output()
+        self.audio_out = audio.open_output()
         self.stop_event = None
         self.paused = False
 
-        self.latency = self.stream.get_output_latency()
+        self.latency = self.audio_out.get_output_latency()
         self.play_ahead = round(self.latency * BLOCKS_PER_SECOND)
 
         self.thread = Thread(target=self._main, daemon=True)
@@ -73,9 +82,9 @@ class ClipPlayer(ClipThread):
             else:
                 block = add_blocks(clip.get_block(pos) \
                                    for clip in self.transport.clips)
-                self.stream.write(block)
+                self.audio_out.write(block)
 
-        self.stream.close()
+        self.audio_out.close()
         self.stop_event.set()
 
 
@@ -88,6 +97,10 @@ class Transport:
         self.recorder = None
 
         self.block_pos = 0
+
+    def deselect_all(self):
+        for clip in self.clips:
+            clip.selected = False
 
     @property
     def pos(self):
@@ -106,9 +119,13 @@ class Transport:
         return self.recorder is not None
 
     def start_recording(self):
-        # if self.recorder is None:
-        #   self.recorder = ClipRecorder(clip)
-        pass
+        self.stop_recording()
+        if self.recorder is None:
+            filename = make_filename('testclips')
+            clip = Clip(filename, start=self.pos, y=self.y, load=False)
+            self.clips.append(clip)
+            self.play()
+            self.recorder = ClipRecorder(clip)
 
     def stop_recording(self):
         if self.recorder is not None:
@@ -122,13 +139,10 @@ class Transport:
             self.player = ClipPlayer(self)
 
     def stop(self):
+        self.stop_recording()
         if self.player:
             self.player.stop()
             self.player = None
-
-    def record(self, filename):
-        self._stop_recording()
-        self.recorder = ClipRecorder(filename)
 
     def delete(self):
         # Todo: handle deleting recording clip.

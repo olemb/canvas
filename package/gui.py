@@ -76,15 +76,13 @@ class GUI(Gtk.Window):
             self.transport.y += 0.05
         elif key == Gdk.KEY_Return:
             if self.transport.recording:
-                self.transport.start_recording()
-            else:
                 self.transport.stop_recording()
+            else:
+                self.transport.start_recording()
         elif key == Gdk.KEY_space:
             if self.transport.playing:
-                print('Stop')
                 self.transport.stop()
             else:
-                print('Play')
                 self.transport.play()
         self.draw()
 
@@ -103,8 +101,7 @@ class GUI(Gtk.Window):
                 self.dragging_clip = clips[0]
                 self.clip_drag_distance = 0
             else:
-                for clip in self.transport.clips:
-                    clip.selected = False
+                self.transport.deselect_all()
                 self.timeline.set_cursor(event.x, event.y)
                 self.dragging_cursor = True
         self.draw()

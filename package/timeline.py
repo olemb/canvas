@@ -4,17 +4,18 @@ from .clips import get_start_and_end
 
 COLORS = {
     'normal-clip': (0.83, 0.6, 0.0, 0.4),
-    # 'normal-stroke': (0, 0, 0, 1),
     'soloed-clip': (1.0, 0.0, 0.0, 0.4),
     'selected-clip': (0.0, 0.57, 0.83, 0.8),
     'muted-clip': (0.77, 0.77, 0.77, 0.3),
+
     'clip-stroke': (0, 0, 0, 1),
+
     'play-cursor': (0, 0, 0, 0.5),
     'record-cursor': (1, 0, 0, 1),
 }
 CLIP_HEIGHT = 30
 MIN_DRAW_LENGTH = 60 * 1
-MIN_CLIP_LENGTH = 16
+MIN_CLIP_LENGTH = 8
 
 #
 # These are not used yet.
