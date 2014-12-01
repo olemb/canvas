@@ -23,13 +23,15 @@ class Clip:
     def from_json(cls, obj):
         return cls(**obj)
 
-    def __init__(self, filename, start=0, y=0, muted=False, load=True):
+    def __init__(self, filename, start=0, y=0, muted=False, load=True,
+                 length=None):
         self.filename = filename
         self.start = start
-        self.length = None
-        self.y = 0
+        self.length = length
+        self.y = y
         self.muted = muted
         self.recording = False
+        self.selected = False
 
         self.start_block = None
         self.num_blocks = None

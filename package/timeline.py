@@ -1,13 +1,13 @@
 import math
 import cairo
+from .clips import get_start_and_end
 
-WIDTH, HEIGHT = 1600, 900
 COLORS = {
     'normal-clip': (0.83, 0.6, 0.0, 0.4),
     # 'normal-stroke': (0, 0, 0, 1),
     'soloed-clip': (1.0, 0.0, 0.0, 0.4),
-    'selected-clip': (0.0, 0.57, 0.83, 0.4),
-    'muted-clip': (0.77, 0.77, 0.77, 0.4),
+    'selected-clip': (0.0, 0.57, 0.83, 0.8),
+    'muted-clip': (0.77, 0.77, 0.77, 0.3),
     'clip-stroke': (0, 0, 0, 1),
     'play-cursor': (0, 0, 0, 0.5),
     'record-cursor': (1, 0, 0, 1),
@@ -18,6 +18,11 @@ class Timeline:
     def __init__(self):
         self.surface = None
         self.context = None
+        self.width = None
+        self.height = None
+        self.xscale = None
+        self.yscale = None
+        self.collision_boxes = []
 
     def _make_surface(self, width, height):
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
@@ -31,48 +36,75 @@ class Timeline:
         elif (width, height) != (self.surface.get_width(),
                                  self.surface.get_height()):
             self.surface.finish()
-            self._make_surface()
+            self._make_surface(width, height)
+
+        self.width = width
+        self.height = height
+        self.xscale = 100
+        self.yscale = self.height
+
+        from .clips import Clip
+        clips = [
+            Clip('', start=1, length=2, y=0.5, load=False),
+            Clip('', start=1.2, length=2, y=0.53, load=False),
+            ]
+        clips[1].selected = True
+        
+        _, end = get_start_and_end(clips)
 
         self.draw_background()
-        self.draw_cursor(120, 0.5)
 
-        self.draw_clip(20, 200, 0.5, 'normal')
-        self.draw_clip(10, 30, 0.49, 'normal')
-        self.draw_clip(20, 100, 0.6, 'selected')
-        self.draw_clip(10, 200, 0.7, 'soloed')
-        self.draw_clip(10, 100, 0.8, 'muted')
+        ctx = self.context
+
+        ctx.save()
+        for clip in clips:
+            box = self.draw_clip(clip)
+            self.collision_boxes.append((box, clip))
+        self.collision_boxes.reverse()
+
+        self.draw_cursor(pos=10, y=0.5, recording=False)
+        ctx.restore()
 
         return self.surface
 
     def draw_background(self):
         ctx = self.context
         ctx.set_source_rgb(1, 1, 1)
-        ctx.rectangle(0, 0, WIDTH, HEIGHT) # Rectangle(x0, y0, x1, y1)
+        ctx.rectangle(0, 0, self.width, self.height)
         ctx.fill()
 
-    def draw_clip(self, start, length, y, mode='normal'):
+    def draw_clip(self, clip):
+        if clip.selected:
+            color = COLORS['selected-clip']
+        elif clip.muted:
+            color = COLORS['muted-clip']
+        else:
+            color = COLORS['normal-clip']
+
         ctx = self.context
-        # Use middle of clip for position.
-        y *= HEIGHT
-        y -= (CLIP_HEIGHT / 2)
 
         # Todo: save box for collision detection.
-        box = [start, y, length, CLIP_HEIGHT]
+        box = (clip.start * self.xscale,
+               (clip.y * self.yscale) - (CLIP_HEIGHT / 2),
+               clip.length * self.xscale,
+               CLIP_HEIGHT)
         ctx.save()
         # ctx.set_antialias(cairo.ANTIALIAS_NONE)
         ctx.set_line_width(1)
 
-        ctx.set_source_rgba(*COLORS[mode + '-clip'])
+        ctx.set_source_rgba(*color)
         ctx.rectangle(*box)
         ctx.fill_preserve()
         ctx.set_source_rgba(*COLORS['clip-stroke'])
         ctx.stroke()
         ctx.restore()
 
-    def draw_cursor(self, x, y, recording=False):
+        return box
+
+    def draw_cursor(self, pos, y, recording=False):
         ctx = self.context
-        x *= WIDTH
-        y *= HEIGHT
+        x = pos * self.xscale
+        y = y * self.height
         ctx.save()
         if recording:
             ctx.set_source_rgba(*COLORS['record-cursor'])
@@ -82,16 +114,17 @@ class Timeline:
         # Horizontal.
         ctx.set_line_width(1)
         ctx.move_to(0, y)
-        ctx.line_to(WIDTH, y)
+        ctx.line_to(self.width, y)
         ctx.stroke()
 
         # Vertical.
         ctx.set_line_width(2)
         ctx.move_to(x, 0)
-        ctx.line_to(x, HEIGHT)
+        ctx.line_to(x, self.height)
         ctx.stroke()
 
         ctx.restore()
 
     def save_screenshot(self, filename):
-        self.surface.surface.write_to_png(filename) # Output to PNG
+        self.surface.surface.write_to_png(filename)
+
