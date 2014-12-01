@@ -1,14 +1,20 @@
 from threading import Thread, Event
 from . import audio
+from .audio import BLOCKS_PER_SECOND, SILENCE, add_blocks
 
-# print('Input latency: {}'.format(instream.get_input_latency()))
-# print('Output latency: {}'.format(outstream.get_output_latency()))
+class ClipThread:
+    def __enter__(self):
+        return self
 
-class ClipRecorder:
+    def __exit__(self, *_, **__):
+        self.stop()
+        return False
+
+class ClipRecorder(ClipThread):
     def __init__(self, filename):
         self.filename = filename
         self.stream = audio.open_input()
-        self._stop_event = None
+        self.stop_event = None
         self.stopped = False
         self.size = 0
         self.latency = self.stream.get_input_latency()
@@ -19,17 +25,17 @@ class ClipRecorder:
         self.thread.start()
 
     def stop(self):
-        self._stop_event = Event()
-        self._stop_event.wait()
+        self.stop_event = Event()
+        self.stop_event.wait()
 
     def _main(self):
-        while not self._stop_event:
+        while not self.stop_event:
             block = self.stream.read(1024)
             self.size += len(block)
             self.outfile.writeframes(block)
         self.stream.close()
         self.outfile.close()
-        self._stop_event.set()
+        self.stop_event.set()
         self.stopped = True
 
     def read(self):
@@ -41,10 +47,45 @@ class ClipRecorder:
                                                        self.size / (2*2*44100))
 
 
+class ClipPlayer(ClipThread):
+    # Todo: should pos be in seconds or blocks?
+    # (Blocks will be used internally.)
+    def __init__(self, clips=None, pos=0):
+        if clips is None:
+            self.clips = []
+        else:
+            self.clips = clips
+        self.pos = pos
+        self.stream = audio.open_output()
+        self.stop_event = None
+        self.stopped = False
+        self.paused = False
 
-class ClipPlayer:
-    def __init__(self, clips):
-        self.clips = clips
+        self.latency = self.stream.get_output_latency()
+        self.play_ahead = round(self.latency * BLOCKS_PER_SECOND)
+        print(self.play_ahead)
+
+        self.thread = Thread(target=self._main, daemon=True)
+        self.thread.start()
+
+    def stop(self):
+        self.stop_event = Event()
+        self.stop_event.wait()
+
+    def _main(self):
+        while not self.stop_event:
+            pos = self.pos + self.play_ahead
+            if self.paused:
+                out.write(SILENCE)
+            else:
+                block = add_blocks(clip.get_block(pos) for clip in self.clips)
+                self.stream.write(block)
+
+            self.pos += 1
+
+        self.stream.close()
+        self.stop_event.set()
+        self.stopped = True    
 
 
 class Transport:
