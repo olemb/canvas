@@ -27,6 +27,8 @@ class Timeline:
         self.yscale = None
         self.collision_boxes = []
 
+        self._make_surface(10, 10)
+
     def _make_surface(self, width, height):
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
                                           width, height)
@@ -125,6 +127,21 @@ class Timeline:
         ctx.fill()
 
         ctx.restore()
+
+    def get_collision(self, x, y):
+        # Todo: why is this function called tons of times every time
+        # you click?
+        clips = []
+        for (box, clip) in self.collision_boxes:
+            (cx, cy, width, height) = box
+            if (cx <= x <= (cx + width)) and (cy <= y <= (cy + height)):
+                print(box)
+                clips.append(clip)
+        return clips
+
+    def set_cursor(self, x, y):
+        self.transport.pos = x / self.xscale
+        self.transport.y = y / self.xscale
 
     def save_screenshot(self, filename):
         self.surface.surface.write_to_png(filename)
