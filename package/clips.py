@@ -1,6 +1,8 @@
+import os
 import math
 from .audio import FRAME_RATE, BLOCK_SIZE, FRAME_SIZE, FRAMES_PER_BLOCK
 from .audio import BLOCKS_PER_SECOND, open_wavefile, add_blocks
+
 
 def _allocate_buffer(start, nframes):
     # Start padding in frames.
@@ -14,6 +16,7 @@ def _allocate_buffer(start, nframes):
     return {'length': nframes / FRAME_RATE,
             'buffer': bytearray(num_blocks * BLOCK_SIZE),
             'start_byte': start_padding * FRAME_SIZE}
+
 
 class Clip:
     @classmethod
@@ -63,10 +66,18 @@ class Clip:
         else:
             return None
 
+    def __repr__(self):
+        filename = os.path.basename(self.filename)
+        return ('Clip({filename!r}, start={c.start:.2f},'
+                ' y={c.y:.2f}, muted={c.muted})').format(filename=filename,
+                                                        c=self)
+
+
 def get_start_and_end(clips):
     """Get start and end time of a clip list in seconds."""
     return (min(clip.start for clip in clips),
             max(clip.start + clip.length for clip in clips))
+
 
 def save_mix(filename, clips):
     start, end = get_start_and_end(clips)
