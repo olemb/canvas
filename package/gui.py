@@ -55,6 +55,7 @@ class GUI(Gtk.Window):
 
     def on_button_press(self, widget, event):
         if event.button == 1:
+            self.mouse_moved = False
             self.last_mouse_x = self.click_x = event.x
             self.last_mouse_y = self.click_y = event.y
 
@@ -64,6 +65,8 @@ class GUI(Gtk.Window):
                 self.dragging_clip = clips[0]
                 self.clip_drag_distance = 0
             else:
+                for clip in self.transport.clips:
+                    clip.selected = False
                 self.timeline.set_cursor(event.x, event.y)
                 self.dragging_cursor = True
         self.draw()
@@ -90,10 +93,11 @@ class GUI(Gtk.Window):
     def on_button_release(self, widget, event):
         # Deselect all clips.
         # Todo: shift?
-        for clip in self.transport.clips:
-            clip.selected = False        
 
         if self.dragging_clip:
+            for clip in self.transport.clips:
+                if clip is not self.dragging_clip:
+                    clip_selected = False
             if not self.mouse_moved:
                 clip.selected = True
             self.dragging_clip = None
