@@ -77,8 +77,11 @@ class Clip:
 
 def get_start_and_end(clips):
     """Get start and end time of a clip list in seconds."""
-    return (min(clip.start for clip in clips),
-            max(clip.start + clip.length for clip in clips))
+    if len(clips) == 0:
+        return (0, 0)
+    else:
+        return (min(clip.start for clip in clips),
+                max(clip.start + clip.length for clip in clips))
 
 
 def save_mix(filename, clips):

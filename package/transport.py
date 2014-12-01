@@ -135,3 +135,15 @@ class Transport:
     def skip(self, n):
         self._stop_recording()
         pass
+
+    def delete(self):
+        # Todo: handle deleting recording clip.
+        keep = []
+        for clip in self.clips:
+            if clip.selected:
+                clip.deleted = clip
+            else:
+                keep.append(clip)
+
+        self.clips = keep
+

@@ -23,16 +23,15 @@ class GUI(Gtk.Window):
         self.area = Gtk.DrawingArea()
         self.area.set_size_request(1000, 600)
         self.area.add_events(Gdk.EventMask.ALL_EVENTS_MASK)
-        # KEY_PRESS_MASK |
-        #                      Gdk.POINTER_MOTION_MASK |
-        #                      Gdk.gdk.BUTTON_PRESS_MASK)
-        # Gdk.gdk.SCROLL_MASK)
         self.area.connect('draw', self.on_draw)
         self.connect('configure-event', self.on_resize)
         self.area.connect('button-press-event', self.on_button_press)
         self.area.connect('button-release-event', self.on_button_release)
         self.area.connect('motion-notify-event', self.on_mouse_motion)
         self.add(self.area)
+
+        self.connect('key-press-event', self.on_key_press)
+        self.connect('key-release-event', self.on_key_press)
 
         self.width = 1000
         self.height = 600
@@ -52,6 +51,15 @@ class GUI(Gtk.Window):
         height = area.get_allocated_height()
         context.set_source_surface(self.timeline.render(width, height))
         context.paint()
+
+    def on_key_press(self, widget, event):
+        key = event.keyval
+        if key == Gdk.KEY_BackSpace:
+            self.transport.delete()
+        self.draw()
+
+    def on_key_release(self, widget, event):
+        pass
 
     def on_button_press(self, widget, event):
         if event.button == 1:
