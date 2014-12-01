@@ -1,4 +1,4 @@
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GObject
 import cairo
 from .timeline import Timeline
 from .transport import Transport
@@ -8,7 +8,6 @@ class GUI(Gtk.Window):
         super(GUI, self).__init__()
         self.transport = Transport()
         self.timeline = Timeline(self.transport)
-        self.init()
 
         self.dragging_clip = None
         self.clip_drag_distance = 0
@@ -18,6 +17,9 @@ class GUI(Gtk.Window):
         self.last_mouse_y = 0
         self.dragging_cursor = False
         self.mouse_moved = False
+        self.last_cursor_pos = 0
+
+        self.init()
 
     def init(self):
         self.area = Gtk.DrawingArea()
@@ -30,8 +32,7 @@ class GUI(Gtk.Window):
         self.area.connect('motion-notify-event', self.on_mouse_motion)
         self.add(self.area)
 
-        self.connect('key-press-event', self.on_key_press)
-        self.connect('key-release-event', self.on_key_press)
+        self.connect('key-press-event', self.on_key_down)
 
         self.width = 1000
         self.height = 600
@@ -41,7 +42,16 @@ class GUI(Gtk.Window):
         self.set_position(Gtk.WindowPosition.CENTER)
         self.connect('delete-event', Gtk.main_quit)
 
+        self.on_timer()
+
         self.show_all()
+
+    def on_timer(self):
+        pos = self.transport.pos
+        if pos != self.last_cursor_pos:
+            self.draw()
+        self.last_cursor_pos = pos
+        GObject.timeout_add(100, self.on_timer)
 
     def draw(self):
         self.area.queue_draw()
@@ -52,7 +62,7 @@ class GUI(Gtk.Window):
         context.set_source_surface(self.timeline.render(width, height))
         context.paint()
 
-    def on_key_press(self, widget, event):
+    def on_key_down(self, widget, event):
         key = event.keyval
         if key == Gdk.KEY_BackSpace:
             self.transport.delete()
@@ -64,6 +74,18 @@ class GUI(Gtk.Window):
             self.transport.y -= 0.05
         elif key == Gdk.KEY_Down:
             self.transport.y += 0.05
+        elif key == Gdk.KEY_Return:
+            if self.transport.recording:
+                self.transport.start_recording()
+            else:
+                self.transport.stop_recording()
+        elif key == Gdk.KEY_space:
+            if self.transport.playing:
+                print('Stop')
+                self.transport.stop()
+            else:
+                print('Play')
+                self.transport.play()
         self.draw()
 
     def on_key_release(self, widget, event):

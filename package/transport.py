@@ -1,6 +1,6 @@
 from threading import Thread, Event
 from . import audio
-from .audio import BLOCKS_PER_SECOND, SILENCE, add_blocks
+from .audio import BLOCKS_PER_SECOND, SECONDS_PER_BLOCK, SILENCE, add_blocks
 
 class ClipThread:
     def __enter__(self):
@@ -15,7 +15,6 @@ class ClipRecorder(ClipThread):
         self.filename = filename
         self.stream = audio.open_input()
         self.stop_event = None
-        self.stopped = False
         self.size = 0
         self.latency = self.stream.get_input_latency()
 
@@ -36,7 +35,6 @@ class ClipRecorder(ClipThread):
         self.stream.close()
         self.outfile.close()
         self.stop_event.set()
-        self.stopped = True
 
     def read(self):
         """Read file and return as a byte string."""
@@ -50,15 +48,10 @@ class ClipRecorder(ClipThread):
 class ClipPlayer(ClipThread):
     # Todo: should pos be in seconds or blocks?
     # (Blocks will be used internally.)
-    def __init__(self, clips=None, pos=0):
-        if clips is None:
-            self.clips = []
-        else:
-            self.clips = clips
-        self.pos = pos
+    def __init__(self, transport):
+        self.transport = transport
         self.stream = audio.open_output()
         self.stop_event = None
-        self.stopped = False
         self.paused = False
 
         self.latency = self.stream.get_output_latency()
@@ -73,28 +66,36 @@ class ClipPlayer(ClipThread):
 
     def _main(self):
         while not self.stop_event:
-            pos = self.pos + self.play_ahead
+            pos = self.transport.block_pos + self.play_ahead
+            self.transport.block_pos += 1
             if self.paused:
                 out.write(SILENCE)
             else:
-                block = add_blocks(clip.get_block(pos) for clip in self.clips)
+                block = add_blocks(clip.get_block(pos) \
+                                   for clip in self.transport.clips)
                 self.stream.write(block)
-
-            self.pos += 1
 
         self.stream.close()
         self.stop_event.set()
-        self.stopped = True    
 
 
 class Transport:
     def __init__(self):
         self.clips = []
-        self.pos = 0  # Position (in seconds)
         self.y = 0.9
 
         self.player = None
         self.recorder = None
+
+        self.block_pos = 0
+
+    @property
+    def pos(self):
+        return self.block_pos * SECONDS_PER_BLOCK
+
+    @pos.setter
+    def pos(self, pos):
+        self.block_pos = max(0, round(pos * BLOCKS_PER_SECOND))
 
     @property
     def playing(self):
@@ -104,37 +105,30 @@ class Transport:
     def recording(self):
         return self.recorder is not None
 
-    def _stop_recording(self):
+    def start_recording(self):
+        # if self.recorder is None:
+        #   self.recorder = ClipRecorder(clip)
+        pass
+
+    def stop_recording(self):
         if self.recorder is not None:
             self.recorder.stop()
             # Todo: load clip.
-
-    def toggle_play(self):
-        if self.playing():
-            self.stop()
-        else:
-            self.play()
+            # self.recorder.clip.load()
+            self.recorder = None
 
     def play(self):
-        self._stop_recording()
-        if not self.playing:
-            self.player = ClipPlayer(self.clips)
+        if not self.player:
+            self.player = ClipPlayer(self)
 
     def stop(self):
-        self._stop_recording()
-        pass
+        if self.player:
+            self.player.stop()
+            self.player = None
 
     def record(self, filename):
         self._stop_recording()
         self.recorder = ClipRecorder(filename)
-
-    def goto(self):
-        self._stop_recording()
-        pass
-
-    def skip(self, n):
-        self._stop_recording()
-        pass
 
     def delete(self):
         # Todo: handle deleting recording clip.
@@ -147,4 +141,3 @@ class Transport:
                 keep.append(clip)
 
         self.clips = keep
-
