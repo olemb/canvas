@@ -2,4 +2,3 @@
 from package.main import main
 
 main()
-
