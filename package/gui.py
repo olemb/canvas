@@ -24,7 +24,7 @@ class GUI(Gtk.Window):
 
     def init(self):
         self.area = Gtk.DrawingArea()
-        self.area.set_size_request(1000, 600)
+        self.area.set_size_request(600, 400)
         self.area.add_events(Gdk.EventMask.ALL_EVENTS_MASK)
         self.area.connect('draw', self.on_draw)
         self.connect('configure-event', self.on_resize)
@@ -35,11 +35,8 @@ class GUI(Gtk.Window):
 
         self.connect('key-press-event', self.on_press_event)
 
-        self.width = 1000
-        self.height = 600
-
         self.set_title('Timeline')
-        self.resize(self.width, self.height)
+        # self.resize(self.width, self.height)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.connect('delete-event', self.quit)
 
