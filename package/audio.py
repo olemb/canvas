@@ -10,7 +10,7 @@ from pyaudio import PyAudio
 
 pa = None
 
-BLOCK_SIZE = 1024
+BLOCK_SIZE = 4096
 
 FRAME_RATE = 44100
 SAMPLE_WIDTH = 2
