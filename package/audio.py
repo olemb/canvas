@@ -45,7 +45,8 @@ def _pa_terminate():
 
 
 def terminate():
-    pa.terminate()
+    if pa is not None:
+        pa.terminate()
 
 
 def add_blocks(blocks):
