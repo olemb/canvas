@@ -1,5 +1,6 @@
 from gi.repository import Gtk, Gdk, GObject
 import cairo
+from . import audio
 from .timeline import Timeline
 from .transport import Transport
 
@@ -148,4 +149,5 @@ class GUI(Gtk.Window):
             self.transport.stop()
             self.transport.save()
             self.transport.save_mix()
+            audio.terminate()
             self.done = True

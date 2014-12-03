@@ -44,6 +44,10 @@ def _pa_terminate():
         pa = None
 
 
+def terminate():
+    pa.terminate()
+
+
 def add_blocks(blocks):
     """Return a block where with the sum of the samples on all blocks.
 
