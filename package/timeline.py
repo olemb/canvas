@@ -2,16 +2,22 @@ import math
 import cairo
 from .clips import get_start_and_end
 
+def convert_color(string):
+    rgba = []
+    string = string.lstrip('#')
+    while string:
+        char, string = string[:2], string[2:]
+        rgba.append(int(char, 16) / 255)
+    return tuple(rgba)
+
 COLORS = {
-    'normal-clip': (0.83, 0.6, 0.0, 0.4),
-    'soloed-clip': (1.0, 0.0, 0.0, 0.4),
-    'selected-clip': (0.0, 0.57, 0.83, 0.8),
-    'muted-clip': (0.77, 0.77, 0.77, 0.3),
-
-    'clip-stroke': (0, 0, 0, 1),
-
-    'play-cursor': (0, 0, 0, 0.5),
-    'record-cursor': (1, 0, 0, 1),
+    'background': convert_color('000000ff')[:3],
+    'normal-clip': convert_color('d4980068'),
+    'selected-clip': convert_color('0092d468'),
+    'muted-clip': convert_color('c4c3c468'),
+    'clip-stroke': convert_color('000000ff'),
+    'play-cursor': convert_color('dddddd7f'),
+    'record-cursor': convert_color('ff0000ff'),
 }
 CLIP_HEIGHT = 30
 MIN_DRAW_LENGTH = 60 * 1
@@ -92,7 +98,7 @@ class Timeline:
 
     def draw_background(self):
         ctx = self.context
-        ctx.set_source_rgb(1, 1, 1)
+        ctx.set_source_rgb(*COLORS['background'])
         ctx.rectangle(0, 0, self.width, self.height)
         ctx.fill()
 
