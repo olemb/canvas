@@ -23,32 +23,6 @@ CLIP_HEIGHT = 30
 MIN_DRAW_LENGTH = 60 * 1
 MIN_CLIP_LENGTH = 8
 
-#
-# These are not used yet.
-#
-class Context:
-    def __init__(self, x, y):
-        self.start_x = self.end_x = x
-        self.start_y = self.end_y = y
-        self.moved
-
-    def move(self, x, y):
-        pass
-
-    def release(self, x, y):
-        pass
-
-class ClipDragContext(Context):
-    def __init__(self, x, y, clips):
-        ClipDragContext.__init__(self, x, y)
-        self.clips = clips
-
-class CursorDragContext(Context):
-    def __init__(self, x, y, transport):
-        ClipDragContext.__init__(self, x, y)
-        self.transport = transport
-
-
 class Timeline:
     def __init__(self, transport):
         self.transport = transport
