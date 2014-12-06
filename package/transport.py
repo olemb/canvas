@@ -94,8 +94,8 @@ class Transport:
     def __init__(self, dirname=None):
         self.dirname = dirname
         self.savefilename = os.path.join(dirname, 'clips.json')
-        if not os.path.exists(dirname):
-            os.mkdir(dirname)
+        self.clipdir = os.path.join(dirname, 'clips')
+
         self.clips = []
         self.y = 0.9
 
@@ -103,6 +103,10 @@ class Transport:
         self.recorder = None
 
         self.block_pos = 0
+
+        if not os.path.exists(self.clipdir):
+            # Create clipdir (and dirname)
+            os.makedirs(self.clipdir)
 
     def deselect_all(self):
         for clip in self.clips:
@@ -128,7 +132,7 @@ class Transport:
     def start_recording(self):
         self.stop_recording()
         if self.recorder is None:
-            filename = make_filename(self.dirname)
+            filename = make_filename(self.clipdir)
             clip = Clip(filename, start=self.pos, y=self.y, load=False)
             self.deselect_all()
             clip.selected = True
@@ -165,7 +169,7 @@ class Transport:
         self.clips = keep
 
     def load(self):
-        self.clips = read_savefile(self.savefilename)
+        self.clips = read_savefile(self.savefilename, self.clipdir)
 
     def save(self):
         write_savefile(self.savefilename, self.clips)

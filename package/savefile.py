@@ -2,9 +2,7 @@ import os
 import json
 from .clips import Clip
 
-def read_savefile(filename):
-    dirname = os.path.dirname(os.path.abspath(filename))
-
+def read_savefile(filename, clipdir):
     if not os.path.exists(filename):
         return []
 
@@ -16,7 +14,7 @@ def read_savefile(filename):
             if not 'filename' in fclip:
                 continue
                 
-            fclip['filename'] = os.path.join(dirname, fclip['filename'])
+            fclip['filename'] = os.path.join(clipdir, fclip['filename'])
             fclip = {k: v for k, v in fclip.items() if k in valid_arguments}
             clips.append(Clip(load=True, **fclip))
 
