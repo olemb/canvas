@@ -1,3 +1,4 @@
+import sys
 from gi.repository import Gtk, Gdk, GObject
 import cairo
 from . import audio
@@ -44,6 +45,8 @@ class GUI(Gtk.Window):
         self.on_timer()
 
         self.show_all()
+
+        sys.excepthook = self.on_exception
 
     def on_timer(self):
         pos = self.transport.pos
@@ -142,11 +145,20 @@ class GUI(Gtk.Window):
     def on_resize(self, widget, event):
         pass
 
+    def on_exception(self, type, value, traceback):
+        if type is KeyboardInterrupt:
+            self.quit()
+        else:
+            raise
+
     def autosave(self):
         self.transport.save()
 
     def run(self):
-        Gtk.main()
+        try:
+            Gtk.main()
+        except KeyboardInterrupt:
+            print('!!!')
 
     def quit(self, *_, **__):
         if not self.done:
