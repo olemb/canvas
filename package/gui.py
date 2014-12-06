@@ -65,6 +65,7 @@ class GUI(Gtk.Window):
         key = event.keyval
         if key == Gdk.KEY_BackSpace:
             self.transport.delete()
+            self.autosave()
         elif key == Gdk.KEY_Left:
             self.transport.pos -= 1
         elif key == Gdk.KEY_Right:
@@ -78,6 +79,7 @@ class GUI(Gtk.Window):
                 self.transport.stop_recording()
             else:
                 self.transport.start_recording()
+                self.autosave()
         elif key == Gdk.KEY_space:
             if self.transport.playing:
                 self.transport.stop()
@@ -132,12 +134,16 @@ class GUI(Gtk.Window):
                 self.transport.deselect_all()
                 clip.selected = True
             self.dragging_clip = None
+            self.autosave()
         elif self.dragging_cursor:
             self.dragging_cursor = False
         self.draw()
 
     def on_resize(self, widget, event):
         pass
+
+    def autosave(self):
+        self.transport.save()
 
     def run(self):
         Gtk.main()
