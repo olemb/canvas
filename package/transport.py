@@ -57,8 +57,6 @@ class ClipRecorder(ClipThread):
 
 
 class ClipPlayer(ClipThread):
-    # Todo: should pos be in seconds or blocks?
-    # (Blocks will be used internally.)
     def __init__(self, transport):
         self.transport = transport
         self.audio_out = audio.open_output()
