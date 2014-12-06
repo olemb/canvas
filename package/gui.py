@@ -35,7 +35,8 @@ class GUI(Gtk.Window):
         self.area.connect('motion-notify-event', self.on_mouse_motion)
         self.add(self.area)
 
-        self.connect('key-press-event', self.on_press_event)
+        self.connect('key-press-event', self.on_key_press_event)
+        self.connect('key-release-event', self.on_key_release_event)
 
         self.set_title('Timeline')
         # self.resize(self.width, self.height)
@@ -64,8 +65,10 @@ class GUI(Gtk.Window):
         context.set_source_surface(self.timeline.render(width, height))
         context.paint()
 
-    def on_press_event(self, widget, event):
+    def on_key_press_event(self, widget, event):
+        key_name = Gdk.keyval_name(event.keyval)
         key = event.keyval
+
         if key == Gdk.KEY_BackSpace:
             self.transport.delete()
             self.autosave()
@@ -89,6 +92,10 @@ class GUI(Gtk.Window):
             else:
                 self.transport.play()
         self.draw()
+
+    def on_key_release_event(self, widget, event):
+        key_name = Gdk.keyval_name(event.keyval)
+        # print(key_name, 'released')
 
     def on_button_press(self, widget, event):
         if event.button == 1:
