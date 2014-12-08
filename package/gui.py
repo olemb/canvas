@@ -93,6 +93,10 @@ class GUI(Gtk.Window):
                 self.transport.play()
         elif key_name == 's':
             self.transport.solo = True
+        elif key_name == 'm':
+            for clip in self.transport.clips:
+                if clip.selected:
+                    clip.muted = not clip.muted
         self.draw()
 
     def on_key_release_event(self, widget, event):
