@@ -80,8 +80,14 @@ class ClipPlayer(ClipThread):
             if self.paused:
                 out.write(SILENCE)
             else:
-                block = add_blocks(clip.get_block(pos) \
-                                   for clip in self.transport.clips)
+                if self.transport.solo:
+                    clips = (clip for clip in self.transport.clips if
+                             clip.selected)
+                else:
+                    clips = (clip for clip in self.transport.clips if
+                             not clip.muted)
+
+                block = add_blocks(clip.get_block(pos) for clip in clips)
                 self.audio_out.write(block)
 
         self.audio_out.close()
@@ -99,6 +105,7 @@ class Transport:
 
         self.player = None
         self.recorder = None
+        self.solo = False
 
         self.block_pos = 0
 

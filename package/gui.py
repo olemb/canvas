@@ -66,7 +66,7 @@ class GUI(Gtk.Window):
         context.paint()
 
     def on_key_press_event(self, widget, event):
-        key_name = Gdk.keyval_name(event.keyval)
+        key_name = event.string
         key = event.keyval
 
         if key == Gdk.KEY_BackSpace:
@@ -91,11 +91,15 @@ class GUI(Gtk.Window):
                 self.transport.stop()
             else:
                 self.transport.play()
+        elif key_name == 's':
+            self.transport.solo = True
         self.draw()
 
     def on_key_release_event(self, widget, event):
-        key_name = Gdk.keyval_name(event.keyval)
-        # print(key_name, 'released')
+        key_name = event.string
+        if key_name == 's':
+            self.transport.solo = False
+        self.draw()
 
     def on_button_press(self, widget, event):
         if event.button == 1:
@@ -109,7 +113,8 @@ class GUI(Gtk.Window):
                 self.dragging_clip = clips[0]
                 self.clip_drag_distance = 0
             else:
-                self.transport.deselect_all()
+                if not self.transport.solo:
+                    self.transport.deselect_all()
                 self.timeline.set_cursor(event.x, event.y)
                 self.dragging_cursor = True
         self.draw()

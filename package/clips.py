@@ -63,8 +63,6 @@ class Clip:
             self.num_blocks = int(len(self.audio) / BLOCK_SIZE)
             
     def get_block(self, pos):
-        if self.muted:
-           return None
         pos -= self.start_block
         if 0 <= pos < self.num_blocks:
             return self.audio[pos * BLOCK_SIZE:(pos + 1) * BLOCK_SIZE]

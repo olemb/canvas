@@ -14,7 +14,7 @@ COLORS = {
     'background': convert_color('000000ff')[:3],
     'normal-clip': convert_color('d4980068'),
     'selected-clip': convert_color('0092d468'),
-    'muted-clip': convert_color('c4c3c468'),
+    'muted-clip': convert_color('c4c3c438'),
     'clip-stroke': convert_color('000000ff'),
     'play-cursor': convert_color('dddddd7f'),
     'record-cursor': convert_color('ff0000ff'),
@@ -77,13 +77,19 @@ class Timeline:
         ctx.fill()
 
     def draw_clip(self, clip):
-        if clip.selected:
-            color = COLORS['selected-clip']
-        elif clip.muted:
-            color = COLORS['muted-clip']
+        if self.transport.solo:
+            if clip.selected:
+                color = COLORS['selected-clip']
+            else:
+                color = COLORS['muted-clip']
         else:
-            color = COLORS['normal-clip']
-
+            if clip.selected:
+                color = COLORS['selected-clip']
+            elif clip.muted:
+                color = COLORS['muted-clip']
+            else:
+                color = COLORS['normal-clip']
+                
         ctx = self.context
 
         # Todo: save box for collision detection.
