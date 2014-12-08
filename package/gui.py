@@ -204,6 +204,5 @@ class GUI(Gtk.Window):
             Gtk.main_quit()
             self.transport.stop()
             self.transport.save()
-            self.transport.save_mix()
             audio.terminate()
             self.done = True
