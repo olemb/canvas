@@ -20,7 +20,7 @@ COLORS = {
     'play-cursor': convert_color('dddddd7f'),
     'record-cursor': convert_color('ff0000ff'),
 }
-CLIP_HEIGHT = 30
+CLIP_HEIGHT_SCALE = 0.075
 MIN_DRAW_LENGTH = 60 * 1
 MIN_CLIP_LENGTH = 8
 
@@ -34,6 +34,7 @@ class Timeline:
         self.xscale = None
         self.yscale = None
         self.collision_boxes = []
+        self.clip_height = None
 
         self._make_surface(10, 10)
 
@@ -41,7 +42,7 @@ class Timeline:
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
                                           width, height)
         self.context = cairo.Context(self.surface)
-        
+        self.clip_height = height * CLIP_HEIGHT_SCALE
 
     def render(self, width, height):
         if self.surface is None:
@@ -97,9 +98,9 @@ class Timeline:
 
         # Todo: save box for collision detection.
         box = (clip.start * self.xscale,
-               (clip.y * self.yscale) - (CLIP_HEIGHT / 2),
+               (clip.y * self.yscale) - (self.clip_height / 2),
                max(MIN_CLIP_LENGTH, clip.length * self.xscale),
-               CLIP_HEIGHT)
+               self.clip_height)
         ctx.save()
         # ctx.set_antialias(cairo.ANTIALIAS_NONE)
         ctx.set_line_width(1)
@@ -132,9 +133,9 @@ class Timeline:
         ctx.stroke()
 
         # Horizontal.
-        height = CLIP_HEIGHT + 4
+        height = self.clip_height + 4
         x = 0
-        y = (y * self.height) - (CLIP_HEIGHT / 2)
+        y = (y * self.height) - (self.clip_height / 2)
         ctx.set_source_rgba(0.5, 0.5, 0.5, 0.15)
         ctx.rectangle(x, y, self.width, height)
         ctx.fill()
