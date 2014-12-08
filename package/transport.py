@@ -160,8 +160,6 @@ class Transport:
     def stop_recording(self):
         if self.recorder is not None:
             self.recorder.stop()
-            # Todo: load clip.
-            # self.recorder.clip.load()
             self.recorder = None
 
     def play(self):
@@ -191,5 +189,7 @@ class Transport:
     def save(self):
         write_savefile(self.savefilename, self.clips)
 
-    def save_mix(self):
-        save_mix(os.path.join(self.dirname, 'mix.wav'), self.clips)
+    def save_mix(self, filename=None):
+        if filename is None:
+            filename = os.path.join(self.dirname, 'mix.wav')
+        save_mix(filename, self.clips)

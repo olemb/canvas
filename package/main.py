@@ -1,5 +1,6 @@
 import click
 from .gui import GUI
+from .transport import Transport
 
 CLIPS = [
     # Clip('testclips/a.wav', start=0, y=0.5),
@@ -8,15 +9,22 @@ CLIPS = [
 ]
 
 @click.command()
-@click.argument('dirname')
-def main(dirname):
-    gui = GUI(dirname)
-    gui.transport.load()
-    try:
-        
+@click.option('--mix', default=None, help='Mix down recording to wav file.',
+              type=click.Path())
+@click.argument('dirname', type=click.Path())
+def main(mix, dirname):
+    if mix:
+        transport = Transport(dirname)
+        transport.load()
+        transport.save_mix(mix)
+    else:
+        gui = GUI(dirname)
+        gui.transport.load()
         try:
-            gui.run()
-        except KeyboardInterrupt:
-            pass
-    finally:
-        gui.quit()
+
+            try:
+                gui.run()
+            except KeyboardInterrupt:
+                pass
+        finally:
+            gui.quit()
