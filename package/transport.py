@@ -117,6 +117,18 @@ class Transport:
         for clip in self.clips:
             clip.selected = False
 
+    def mute_or_unmute_selection(self):
+        # Get selected clips.
+        clips = [c for c in self.clips if c.selected]
+
+        if any(c for c in clips if not c.muted):
+            mute_clips = True
+        else:
+            mute_clips = False
+
+        for clip in clips:
+            clip.muted = mute_clips
+
     @property
     def pos(self):
         return self.block_pos * SECONDS_PER_BLOCK
