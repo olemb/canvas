@@ -28,7 +28,8 @@ BLOCKS_PER_SECOND = 1 / SECONDS_PER_BLOCK
 
 PA_AUDIO_FORMAT = dict(format=pyaudio.paInt16,
                        channels=NUM_CHANNELS,
-                       rate=FRAME_RATE)
+                       rate=FRAME_RATE,
+                       frames_per_buffer=FRAMES_PER_BLOCK)
 
 def _pa_init():
     global pa
