@@ -159,7 +159,9 @@ class GUI(Gtk.Window):
         shift_held = bool(int(event.state) & 1)
 
         if event.button == 1:
-            if not self.dragging_clips:
+            if self.dragging_clips:
+                self.autosave()
+            else:
                 if self.clips_to_drag:
                     # Deselect other clips unless shift is
                     # held down. (1 == shift.)
