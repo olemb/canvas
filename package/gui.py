@@ -156,12 +156,22 @@ class GUI(Gtk.Window):
     def on_button_release(self, widget, event):
         # Deselect all clips.
         # Todo: shift?
+        shift_held = bool(int(event.state) & 1)
 
         if event.button == 1:
             if not self.dragging_clips:
                 if self.clips_to_drag:
-                    self.transport.deselect_all()
-                    self.clips_to_drag[0].selected = True
+                    # Deselect other clips unless shift is
+                    # held down. (1 == shift.)
+                    # Todo: this should use SHIFT_MASK but
+                    # there's no obvious way to do that.
+                    clip = self.clips_to_drag[0]
+
+                    if shift_held:
+                        clip.selected = not clip.selected
+                    else:
+                        self.transport.deselect_all()
+                        self.clips_to_drag[0].selected = True
 
             self.clips_to_drag = None
             self.dragging_clips = False
