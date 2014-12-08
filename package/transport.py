@@ -101,7 +101,7 @@ class Transport:
         self.clipdir = os.path.join(dirname, 'clips')
 
         self.clips = []
-        self.y = 0.9
+        self.y = 0.5
 
         self.player = None
         self.recorder = None
