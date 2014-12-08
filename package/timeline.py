@@ -152,6 +152,8 @@ class Timeline:
         return clips
 
     def set_cursor(self, x, y):
+        # This is done here because the cursor must be constrained within
+        # the screen, not the recording.
         # (Don't allow dragging the cursor outside the screen.)
         self.transport.pos = max(0, (min(self.width, x) / self.xscale))
         self.transport.y = max(0, min(1, y / self.yscale))
