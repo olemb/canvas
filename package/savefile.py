@@ -13,9 +13,11 @@ def read_savefile(filename, clipdir):
         for fclip in json.load(infile).get('clips', ()):
             if not 'filename' in fclip:
                 continue
-                
+
             fclip['filename'] = os.path.join(clipdir, fclip['filename'])
             fclip = {k: v for k, v in fclip.items() if k in valid_arguments}
+            # Clip.__init__() will provide default values for keys that
+            # are not in the file.
             clips.append(Clip(load=True, **fclip))
 
     return clips
