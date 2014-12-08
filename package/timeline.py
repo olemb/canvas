@@ -20,7 +20,7 @@ COLORS = {
     'play-cursor': convert_color('dddddd7f'),
     'record-cursor': convert_color('ff0000ff'),
 }
-CLIP_HEIGHT_SCALE = 0.075
+CLIP_HEIGHT_SCALE = 0.05
 MIN_DRAW_LENGTH = 60 * 1
 MIN_CLIP_LENGTH = 8
 
