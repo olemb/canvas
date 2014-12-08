@@ -12,12 +12,12 @@ class GUI(Gtk.Window):
         self.timeline = Timeline(self.transport)
         self.done = False
 
-        self.dragging_clip = None
-        self.clip_drag_distance = 0
-        self.click_x = 0
-        self.click_y = 0
-        self.last_mouse_x = 0
-        self.last_mouse_y = 0
+        self.start_x = 0
+        self.start_y = 0
+        self.last_x = 0
+        self.last_y = 0
+        self.clips_to_drag = None
+        self.dragging_clips = False
         self.dragging_cursor = False
         self.mouse_moved = False
         self.last_cursor_pos = 0
@@ -108,14 +108,15 @@ class GUI(Gtk.Window):
     def on_button_press(self, widget, event):
         if event.button == 1:
             self.mouse_moved = False
-            self.last_mouse_x = self.click_x = event.x
-            self.last_mouse_y = self.click_y = event.y
+            self.last_x = self.start_x = event.x
+            self.last_y = self.start_y = event.y
 
             clips = self.timeline.get_collision(event.x, event.y)
 
             if clips:
-                self.dragging_clip = clips[0]
-                self.clip_drag_distance = 0
+                # Just drag the first clip.
+                # (Todo: drag selected clips?)
+                self.clips_to_drag = clips[:1]
             else:
                 if not self.transport.solo:
                     self.transport.deselect_all()
@@ -124,19 +125,29 @@ class GUI(Gtk.Window):
         self.draw()
 
     def on_mouse_motion(self, widget, event):
-        dx = event.x - self.last_mouse_x
-        dy = event.y - self.last_mouse_y
-        self.last_mouse_x += dx
-        self.last_mouse_y += dy
+        dx = event.x - self.last_x
+        dy = event.y - self.last_y
+        self.last_x += dx
+        self.last_y += dy
 
-        if self.dragging_clip:
-            clip = self.dragging_clip
-            clip.y += (dy / self.timeline.yscale)
-            # Don't allow dragging the clip outside the screen.
-            clip.y = max(0, clip.y)
-            clip.y = min(1, clip.y)
+        if self.clips_to_drag:
+            if self.dragging_clips:
+                for clip in self.clips_to_drag:
+                    clip.y += (dy / self.timeline.yscale)
+                    # Don't allow dragging the clip outside the screen.
+                    clip.y = max(0, clip.y)
+                    clip.y = min(1, clip.y)
+            else:
+                # If we've moved more than 5 pixels from
+                # where we clicked, start dragging the clip.
+                dx2 = abs(event.x - self.start_x)
+                dy2 = abs(event.y - self.start_y)
+                if dx2 > 5 or dy2 > 5:
+                    self.start_x = event.x
+                    self.start_y = event.y
+                    self.dragging_clips = True
         elif self.dragging_cursor:
-            self.timeline.set_cursor(self.last_mouse_x, self.last_mouse_y)
+            self.timeline.set_cursor(self.last_x, self.last_y)
             # Todo: scrub.
 
         self.draw()
@@ -146,16 +157,16 @@ class GUI(Gtk.Window):
         # Deselect all clips.
         # Todo: shift?
 
-        if self.dragging_clip:
-            if not self.mouse_moved:
-                clip = self.dragging_clip
-                selected = clip.selected
-                self.transport.deselect_all()
-                clip.selected = True
-            self.dragging_clip = None
-            self.autosave()
-        elif self.dragging_cursor:
+        if event.button == 1:
+            if not self.dragging_clips:
+                if self.clips_to_drag:
+                    self.transport.deselect_all()
+                    self.clips_to_drag[0].selected = True
+
+            self.clips_to_drag = None
+            self.dragging_clips = False
             self.dragging_cursor = False
+
         self.draw()
 
     def on_resize(self, widget, event):
