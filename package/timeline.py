@@ -14,7 +14,8 @@ COLORS = {
     'background': convert_color('000000ff')[:3],
     'normal-clip': convert_color('d4980068'),
     'selected-clip': convert_color('0092d468'),
-    'muted-clip': convert_color('c4c3c438'),
+    'muted-clip': convert_color('ffffff33'),
+    'muted-selected-clip': convert_color('0092d438'),
     'clip-stroke': convert_color('000000ff'),
     'play-cursor': convert_color('dddddd7f'),
     'record-cursor': convert_color('ff0000ff'),
@@ -83,7 +84,9 @@ class Timeline:
             else:
                 color = COLORS['muted-clip']
         else:
-            if clip.selected:
+            if clip.selected and clip.muted: 
+                color = COLORS['muted-selected-clip']
+            elif clip.selected:
                 color = COLORS['selected-clip']
             elif clip.muted:
                 color = COLORS['muted-clip']
