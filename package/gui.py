@@ -200,8 +200,8 @@ class GUI(Gtk.Window):
 
     def quit(self, *_, **__):
         if not self.done:
-            # Todo: save.
             Gtk.main_quit()
             self.transport.stop()
+            self.transport.save()
             audio.terminate()
             self.done = True
