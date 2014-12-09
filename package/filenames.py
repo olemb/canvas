@@ -1,15 +1,15 @@
 import os
 import random
 
-consonants = 'bcdfghjklmnpqrstvwxz'
-vowels = 'aeiouy'
+# Consonants and vowels that are easy to pronounce.
+consonants = 'bdfghjklmnprstv'
+vowels = 'aiueo'
+
+def random_syllable():
+    return random.choice(consonants) + random.choice(vowels)
 
 def _make_name():
-    chars = []
-    for i in range(4):
-        chars.append(random.choice(consonants))
-        chars.append(random.choice(vowels))
-    return ''.join(chars) + '.wav'
+    return ''.join(random_syllable() for _ in range(4)) + '.wav'
 
 def make_filename(dirname):
     while True:
