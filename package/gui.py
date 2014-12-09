@@ -69,7 +69,7 @@ class GUI(Gtk.Window):
         key_name = event.string
         key = event.keyval
 
-        if key == Gdk.KEY_BackSpace:
+        if key in (Gdk.KEY_BackSpace, Gdk.KEY_Delete):
             self.transport.delete()
             self.autosave()
         elif key == Gdk.KEY_Left:
