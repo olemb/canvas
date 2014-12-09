@@ -203,6 +203,5 @@ class GUI(Gtk.Window):
             # Todo: save.
             Gtk.main_quit()
             self.transport.stop()
-            self.transport.save()
             audio.terminate()
             self.done = True
