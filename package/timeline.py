@@ -103,13 +103,11 @@ class Timeline:
                self.clip_height)
         ctx.save()
         # ctx.set_antialias(cairo.ANTIALIAS_NONE)
-        ctx.set_line_width(1)
 
         ctx.set_source_rgba(*color)
         ctx.rectangle(*box)
-        ctx.fill_preserve()
-        ctx.set_source_rgba(*COLORS['clip-stroke'])
-        ctx.stroke()
+        ctx.fill()
+
         ctx.restore()
 
         return box
