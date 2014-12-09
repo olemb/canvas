@@ -196,7 +196,7 @@ class GUI(Gtk.Window):
         try:
             Gtk.main()
         except KeyboardInterrupt:
-            print('!!!')
+            self.quit()
 
     def quit(self, *_, **__):
         if not self.done:
