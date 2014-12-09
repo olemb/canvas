@@ -96,13 +96,11 @@ class Timeline:
                 
         ctx = self.context
 
-        # Todo: save box for collision detection.
         box = (clip.start * self.xscale,
                (clip.y * self.yscale) - (self.clip_height / 2),
                max(MIN_CLIP_LENGTH, clip.length * self.xscale),
                self.clip_height)
         ctx.save()
-        # ctx.set_antialias(cairo.ANTIALIAS_NONE)
 
         ctx.set_source_rgba(*color)
         ctx.rectangle(*box)
