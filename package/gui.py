@@ -81,16 +81,10 @@ class GUI(Gtk.Window):
         elif key == Gdk.KEY_Down:
             self.transport.y += 0.05
         elif key == Gdk.KEY_Return:
-            if self.transport.recording:
-                self.transport.stop_recording()
-            else:
-                self.transport.start_recording()
+            if self.transport.toggle_recording():
                 self.autosave()
         elif key == Gdk.KEY_space:
-            if self.transport.playing:
-                self.transport.stop()
-            else:
-                self.transport.play()
+            self.transport.toggle_playback()
         elif key_name == 's':
             self.transport.solo = True
         elif key_name == 'm':

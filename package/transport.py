@@ -162,6 +162,14 @@ class Transport:
             self.recorder.stop()
             self.recorder = None
 
+    def toggle_recording(self):
+        if self.recording:
+            self.stop_recording()
+        else:
+            self.start_recording()
+
+        return self.recording
+
     def play(self):
         if not self.player:
             self.player = ClipPlayer(self)
@@ -171,6 +179,14 @@ class Transport:
         if self.player:
             self.player.stop()
             self.player = None
+
+    def toggle_playback(self):
+        if self.playing:
+            self.stop()
+        else:
+            self.play()
+
+        return self.playing
 
     def delete(self):
         self.stop_recording()
