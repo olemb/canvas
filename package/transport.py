@@ -199,6 +199,25 @@ class Transport:
 
         self.clips = keep
 
+    def select_next(self, reverse=False):
+        if len(self.clips) == 0:
+            return
+
+        # Get first selected clip.
+        try:
+            i = min([i for i, c in enumerate(self.clips) if c.selected])
+        except ValueError:
+            # No selected clips.
+            i = 0
+        else:
+            if reverse:
+                i -= 1
+            else:
+                i += 1
+
+        self.deselect_all()
+        self.clips[i % len(self.clips)].selected = True
+
     def load(self):
         self.clips = read_savefile(self.savefilename, self.clipdir)
 

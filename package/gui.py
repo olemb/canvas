@@ -85,11 +85,16 @@ class GUI(Gtk.Window):
                 self.autosave()
         elif key == Gdk.KEY_space:
             self.transport.toggle_playback()
+        elif key == Gdk.KEY_Tab:
+            self.transport.select_next()
+        elif key == Gdk.KEY_ISO_Left_Tab:
+            self.transport.select_next(reverse=True)
         elif key_name == 's':
             self.transport.solo = True
         elif key_name == 'm':
             self.transport.mute_or_unmute_selection()
             self.autosave()
+
         self.draw()
 
     def on_key_release_event(self, widget, event):
