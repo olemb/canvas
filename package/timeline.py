@@ -129,7 +129,7 @@ class Timeline:
         ctx.stroke()
 
         # Horizontal.
-        height = self.clip_height + 4
+        height = self.clip_height
         x = 0
         y = (y * self.height) - (self.clip_height / 2)
         ctx.set_source_rgba(0.5, 0.5, 0.5, 0.15)
