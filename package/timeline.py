@@ -12,9 +12,9 @@ def convert_color(string):
 
 BRIGHT_COLORS = {
     'background': convert_color('ffffffff')[:3],
-    'normal-clip': convert_color('d4980068'),
-    'selected-clip': convert_color('0092d468'),
-    'muted-clip': convert_color('c4c3c438'),
+    'normal-clip': convert_color('b4780068'),
+    'selected-clip': convert_color('0062a468'),
+    'muted-clip': convert_color('c4c3c468'),
     'muted-selected-clip': convert_color('0092d438'),
     'clip-stroke': convert_color('000000ff'),
     'play-cursor': convert_color('dddddd7f'),
@@ -27,10 +27,11 @@ DARK_COLORS = {
     'selected-clip': convert_color('0092d468'),
     'muted-clip': convert_color('c4c3c438'),
     'muted-selected-clip': convert_color('0092d438'),
-    'clip-stroke': convert_color('000000ff'),
+    'clip-stroke': None,
     'play-cursor': convert_color('dddddd7f'),
     'record-cursor': convert_color('ff0000ff'),
 }
+
 
 COLORS = BRIGHT_COLORS
 CLIP_HEIGHT_SCALE = 0.048
@@ -116,8 +117,16 @@ class Timeline:
         ctx.save()
 
         ctx.set_source_rgba(*color)
-        ctx.rectangle(*box)
-        ctx.fill()
+        stroke_color = COLORS['clip-stroke']
+        if stroke_color:
+            ctx.rectangle(*box)
+            ctx.fill_preserve()
+            ctx.set_source_rgba(*stroke_color)
+            ctx.set_line_width(1)
+            ctx.stroke()
+        else:
+            ctx.rectangle(*box)
+            ctx.fill()
 
         ctx.restore()
 
