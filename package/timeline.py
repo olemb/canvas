@@ -10,18 +10,7 @@ def convert_color(string):
         rgba.append(int(char, 16) / 255)
     return tuple(rgba)
 
-BRIGHT_COLORS = {
-    'background': convert_color('ffffffff')[:3],
-    'normal-clip': convert_color('b4780068'),
-    'selected-clip': convert_color('0062a468'),
-    'muted-clip': convert_color('c4c3c468'),
-    'muted-selected-clip': convert_color('0092d438'),
-    'clip-stroke': convert_color('000000ff'),
-    'play-cursor': convert_color('dddddd7f'),
-    'record-cursor': convert_color('ff0000ff'),
-}
-
-DARK_COLORS = {
+COLORS = {
     'background': convert_color('000000ff')[:3],
     'normal-clip': convert_color('c4880068'),
     'selected-clip': convert_color('0092d468'),
@@ -33,7 +22,6 @@ DARK_COLORS = {
 }
 
 
-COLORS = DARK_COLORS
 CLIP_HEIGHT_SCALE = 0.048
 MIN_DRAW_LENGTH = 60 * 1
 MIN_CLIP_LENGTH = 8
