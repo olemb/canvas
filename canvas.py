@@ -1,4 +1,4 @@
 #!/usr/bin/env python3
-from package.main import main
+from canvas.main import main
 
 main()
