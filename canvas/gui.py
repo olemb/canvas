@@ -95,6 +95,21 @@ class GUI(Gtk.Window):
             self.transport.mute_or_unmute_selection()
             self.autosave()
 
+        elif key_name == 'q':
+            # Record
+            self.transport.stop()
+            self.autosave()
+            self.transport.start_recording()
+        elif key_name == 'w':
+            # Play back.
+            self.transport.stop()
+            self.autosave()
+            self.transport.play()
+            # Delete.
+        elif key_name == 'e':
+            self.transport.delete()
+            self.autosave()
+            
         self.draw()
 
     def on_key_release_event(self, widget, event):
