@@ -59,7 +59,8 @@ class Timeline:
         end = max(MIN_DRAW_LENGTH, end)
         self.width = width
         self.height = height
-        self.xscale = 1 / (end) * self.width
+        # Subtract 5 so the recording cursor will not be off-screen.
+        self.xscale = 1 / (end) * (self.width - 5)
         self.yscale = self.height
 
         self.draw_background()
