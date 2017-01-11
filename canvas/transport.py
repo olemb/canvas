@@ -63,8 +63,9 @@ class ClipPlayer(ClipThread):
         self.stop_event = None
         self.paused = False
 
-        self.latency = self.audio_out.get_output_latency()
-        self.play_ahead = round(self.latency * BLOCKS_PER_SECOND)
+        # self.latency = self.audio_out.get_output_latency()
+        # self.play_ahead = round(self.latency * BLOCKS_PER_SECOND)
+        self.play_ahead = 1
 
         self.thread = Thread(target=self._main, daemon=True)
         self.thread.start()
