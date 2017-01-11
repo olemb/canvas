@@ -22,6 +22,10 @@ class GUI(Gtk.Window):
         self.mouse_moved = False
         self.last_cursor_pos = 0
 
+        # These two seem to do the same thing.
+        # self.fullscreen()
+        self.maximize()
+
         self.init()
 
     def init(self):
