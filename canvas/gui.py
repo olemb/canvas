@@ -135,6 +135,7 @@ class GUI(Gtk.Window):
                 # (Todo: drag selected clips?)
                 self.clips_to_drag = clips[:1]
             else:
+                self.transport.deselect_all()
                 self.timeline.set_cursor(event.x, event.y)
                 self.dragging_cursor = True
         self.draw()
