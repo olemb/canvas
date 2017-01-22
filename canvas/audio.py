@@ -67,14 +67,27 @@ def add_blocks(blocks):
     return blocksum
 
 
-def open_input():
-    _pa_init()
-    return pa.open(input=True, **PA_AUDIO_FORMAT)
+class AudioDevice:
+    def __init__(self, callback=None):
+        _pa_init()
 
+        def callback_wrapper(inblock, frame_count, time_info, status):
+            return (callback(inblock), pyaudio.paContinue)
 
-def open_output():
-    _pa_init()
-    return pa.open(output=True, **PA_AUDIO_FORMAT)
+        self.stream = pa.open(input=True,
+                              output=True,
+                              stream_callback=callback_wrapper,
+                              **PA_AUDIO_FORMAT)
+
+        self.latency = self.stream.get_input_latency() \
+                       + self.stream.get_output_latency()
+        self.play_ahead = int(round(self.latency * BLOCKS_PER_SECOND))
+        self.closed = False
+
+    def close(self):
+        if not self.closed:
+            self.stream.close()
+            self.closed = True
 
 
 def open_wavefile(filename, mode):
