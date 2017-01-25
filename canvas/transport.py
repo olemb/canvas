@@ -135,7 +135,7 @@ class Transport:
         self._sync()
 
     def toggle_playback(self):
-        if self.mode == 'playing':
+        if self.mode != 'stopped':
             self.stop()
         else:
             self.play()
