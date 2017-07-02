@@ -12,7 +12,7 @@ Project Status
 
 The program is fully usable but has not been properly polished for
 release. I have no plans to develop it any further as I've moved on to
-an even more minimalistic program.
+writing a set of simpler tools.
 
 Canvas requires Python 3, pyudio and Gtk/Cairo.
 
