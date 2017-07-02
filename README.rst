@@ -1,0 +1,4 @@
+Canvas
+======
+
+.. image:: screenshot.png
