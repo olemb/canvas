@@ -13,7 +13,7 @@ Project Status
 The program is fully usable but has not been properly polished for
 release.
 
-Canvas requires Python 3, pyudio and Gtk/Cairo.
+Canvas requires Python 3, pyaudio and Gtk/Cairo.
 
 I am not aware of any bugs.
 
