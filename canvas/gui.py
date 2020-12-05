@@ -1,6 +1,5 @@
 import sys
 from gi.repository import Gtk, Gdk, GObject
-import cairo
 from . import audio
 from .timeline import Timeline
 from .transport import Transport
@@ -45,7 +44,7 @@ class GUI(Gtk.Window):
         self.set_title('Timeline')
         # self.resize(self.width, self.height)
         self.set_position(Gtk.WindowPosition.CENTER)
-        self.connect('delete-event', self.quit)
+        self.connect('delete-event', self.close)
 
         self.on_timer()
 
@@ -213,9 +212,9 @@ class GUI(Gtk.Window):
         try:
             Gtk.main()
         except KeyboardInterrupt:
-            self.quit()
+            self.close()
 
-    def quit(self, *_, **__):
+    def close(self, *_, **__):
         if not self.done:
             Gtk.main_quit()
             self.transport.stop()

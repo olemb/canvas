@@ -1,17 +1,13 @@
 import os
 import time
 import click
+from contextlib import closing
 from .gui import GUI
 from .transport import Transport
 
-CLIPS = [
-    # Clip('testclips/a.wav', start=0, y=0.5),
-    # Clip('', start=1.2, length=22, y=0.53, load=False),
-    # Clip('', start=0.5, length=0, y=0.55, load=False),
-]
-
 def get_dirname():
-    return os.path.expanduser('~/Desktop/canvas-{:d}'.format(int(time.time())))
+    now = int(time.time())
+    return os.path.expanduser(f'~/Desktop/canvas-{now}')
 
 
 @click.command()
@@ -31,13 +27,6 @@ def main(mix, dirname):
         transport.load()
         transport.save_mix(mix)
     else:
-        gui = GUI(dirname)
-        gui.transport.load()
-        try:
-
-            try:
-                gui.run()
-            except KeyboardInterrupt:
-                pass
-        finally:
-            gui.quit()
+        with closing(GUI(dirname)) as gui:
+            gui.transport.load()
+            gui.run()
