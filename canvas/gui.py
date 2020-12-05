@@ -1,4 +1,6 @@
 import sys
+import gi
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GObject
 from . import audio
 from .timeline import Timeline
@@ -220,5 +222,5 @@ class GUI(Gtk.Window):
             self.transport.stop()
             self.transport.save()
             self.transport.save_mix()
-            audio.terminate()
+            self.transport.close()
             self.done = True

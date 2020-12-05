@@ -2,7 +2,7 @@ import os
 import threading
 from . import audio
 from .audio import BLOCKS_PER_SECOND, SECONDS_PER_BLOCK, SILENCE
-from .audio import BLOCK_SIZE, FRAME_SIZE, add_blocks
+from .audio import add_blocks
 from .clips import Clip, save_mix
 from .filenames import make_filename
 from .savefile import read_savefile, write_savefile
@@ -28,7 +28,7 @@ class Transport:
             # Create clipdir (and dirname)
             os.makedirs(self.clipdir)
 
-        self.audio = audio.AudioDevice(self._audio_callback)
+        self.audio = audio.Stream(self._audio_callback)
         self.play_ahead = self.audio.play_ahead
 
     @property
@@ -182,3 +182,6 @@ class Transport:
         if filename is None:
             filename = os.path.join(self.dirname, 'mix.wav')
         save_mix(filename, self.clips)
+
+    def close(self):
+        self.audio.close()

@@ -1,4 +1,3 @@
-import math
 import cairo
 from .clips import get_start_and_end
 
