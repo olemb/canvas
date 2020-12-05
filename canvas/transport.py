@@ -42,11 +42,11 @@ class Transport:
 
     def _get_block(self, pos):
         if self.solo:
-            clips = (clip for clip in self.clips if
-                     clip.selected)
+            clips = (clip for clip in self.clips
+                     if clip.selected)
         else:
-            clips = (clip for clip in self.clips if
-                     not clip.muted)
+            clips = (clip for clip in self.clips
+                     if not clip.muted)
 
         return add_blocks(clip.get_block(pos) for clip in clips)
 
