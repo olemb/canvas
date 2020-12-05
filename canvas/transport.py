@@ -30,6 +30,7 @@ class Transport:
 
         self.audio = audio.Stream(self._audio_callback)
         self.play_ahead = self.audio.play_ahead
+        self.audio.start()
 
     @property
     def recording(self):
@@ -184,4 +185,4 @@ class Transport:
         save_mix(filename, self.clips)
 
     def close(self):
-        self.audio.close()
+        self.audio.stop()

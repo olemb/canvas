@@ -46,13 +46,15 @@ class Stream:
             channels=2,
             dtype='int16',
             blocksize=FRAMES_PER_BLOCK,
-            callback=callback_wrapper)
-        self.stream.start()
-
+            callback=callback_wrapper,
+        )
         self.latency = sum(self.stream.latency)
         self.play_ahead = int(round(self.latency * BLOCKS_PER_SECOND))
 
-    def close(self):
+    def start(self):
+        self.stream.start()
+        
+    def stop(self):
         self.stream.stop()
     
 
