@@ -121,7 +121,6 @@ class Timeline:
         return box
 
     def draw_cursor(self):
-        pos = self.transport.pos
         y = self.transport.y
 
         ctx = self.context

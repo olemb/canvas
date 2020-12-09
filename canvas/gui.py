@@ -32,7 +32,6 @@ class GUI(Gtk.Window):
         self.area.set_size_request(600, 400)
         self.area.add_events(Gdk.EventMask.ALL_EVENTS_MASK)
         self.area.connect('draw', self.on_draw)
-        self.connect('configure-event', self.on_resize)
         self.area.connect('button-press-event', self.on_button_press)
         self.area.connect('button-release-event', self.on_button_release)
         self.area.connect('motion-notify-event', self.on_mouse_motion)
@@ -42,7 +41,6 @@ class GUI(Gtk.Window):
         self.connect('key-release-event', self.on_key_release_event)
 
         self.set_title('Timeline')
-        # self.resize(self.width, self.height)
         self.set_position(Gtk.WindowPosition.CENTER)
         self.connect('delete-event', self.close)
 
@@ -193,9 +191,6 @@ class GUI(Gtk.Window):
             self.dragging_cursor = False
 
         self.draw()
-
-    def on_resize(self, widget, event):
-        pass
 
     def autosave(self):
         self.transport.save()
