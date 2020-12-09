@@ -52,8 +52,6 @@ class GUI(Gtk.Window):
 
         self.show_all()
 
-        sys.excepthook = self.on_exception
-
     def on_timer(self):
         pos = self.transport.pos
         if pos != self.last_cursor_pos:
@@ -201,12 +199,6 @@ class GUI(Gtk.Window):
     def on_resize(self, widget, event):
         pass
 
-    def on_exception(self, type, value, traceback):
-        if type is KeyboardInterrupt:
-            self.quit()
-        else:
-            raise
-
     def autosave(self):
         self.transport.save()
 
@@ -218,9 +210,9 @@ class GUI(Gtk.Window):
 
     def close(self, *_, **__):
         if not self.done:
-            Gtk.main_quit()
             self.transport.stop()
             self.transport.save()
             self.transport.save_mix()
             self.transport.close()
             self.done = True
+            super(GUI, self).close()
