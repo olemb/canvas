@@ -114,7 +114,7 @@ class GUI(Gtk.Window):
         elif key_name == 'e':
             self.transport.delete()
             self.autosave()
-            
+
         self.draw()
 
     def on_key_release_event(self, widget, event):
@@ -169,7 +169,7 @@ class GUI(Gtk.Window):
 
         self.draw()
         self.mouse_moved = True
- 
+
     def on_button_release(self, widget, event):
         # Deselect all clips.
         # Todo: shift?

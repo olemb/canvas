@@ -53,10 +53,10 @@ class Stream:
 
     def start(self):
         self.stream.start()
-        
+
     def stop(self):
         self.stream.stop()
-    
+
 
 def open_wavefile(filename, mode):
     outfile = wave.open(filename, mode)

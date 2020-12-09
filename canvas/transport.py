@@ -62,14 +62,14 @@ class Transport:
             outblock = self._get_block(self.block_pos + self.play_ahead)
             self.block_pos += 1
         else:
-            outblock = SILENCE  
+            outblock = SILENCE
 
         if self.recording:
             self._outfile.writeframes(inblock)
             self._record_clip.length += SECONDS_PER_BLOCK
-            
+
         return outblock
-            
+
     def deselect_all(self):
         for clip in self.clips:
             clip.selected = False
@@ -113,7 +113,7 @@ class Transport:
         if self.mode == 'recording':
             self.mode = 'playing'
             self._sync()
-            
+
             self._outfile.close()
             self._record_clip.load()
 

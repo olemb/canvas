@@ -87,7 +87,7 @@ class Timeline:
             else:
                 color = COLORS['muted-clip']
         else:
-            if clip.selected and clip.muted: 
+            if clip.selected and clip.muted:
                 color = COLORS['muted-selected-clip']
             elif clip.selected:
                 color = COLORS['selected-clip']
@@ -95,7 +95,7 @@ class Timeline:
                 color = COLORS['muted-clip']
             else:
                 color = COLORS['normal-clip']
-                
+
         ctx = self.context
 
         box = (clip.start * self.xscale,

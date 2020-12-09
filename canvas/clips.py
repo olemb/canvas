@@ -48,7 +48,7 @@ class Clip:
             values = _allocate_buffer(self.start, nframes)
 
             self.audio = values['buffer']
-            
+
             bytepos = values['start_byte']
             read_size = 1024
             while True:
@@ -61,7 +61,7 @@ class Clip:
             self.length = nframes / FRAME_RATE
             self.start_block = int(self.start * BLOCKS_PER_SECOND)
             self.num_blocks = int(len(self.audio) / BLOCK_SIZE)
-            
+
     def get_block(self, pos):
         pos -= self.start_block
         if 0 <= pos < self.num_blocks:
