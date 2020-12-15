@@ -2,7 +2,7 @@ import os
 import threading
 from . import audio
 from .audio import BLOCKS_PER_SECOND, SECONDS_PER_BLOCK, SILENCE
-from .audio import add_blocks
+from .audio import sum_blocks
 from .clips import Clip, save_mix
 from .filenames import make_filename
 from .savefile import read_savefile, write_savefile
@@ -48,7 +48,7 @@ class Transport:
             clips = (clip for clip in self.clips
                      if not clip.muted)
 
-        return add_blocks(clip.get_block(pos) for clip in clips)
+        return sum_blocks(clip.get_block(pos) for clip in clips)
 
     def _sync(self):
         # Todo: timeout.

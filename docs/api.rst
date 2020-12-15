@@ -33,6 +33,6 @@ Summing Audio
 
     import audio
 
-    block = audio.add_blocks(clip.get_block(pos) for clip in clips)
+    block = audio.sum_blocks(clip.get_block(pos) for clip in clips)
 
-``add_blocks()`` treats ``None`` values as silence.
+``sum_blocks()`` treats ``None`` values as silence.

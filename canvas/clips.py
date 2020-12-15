@@ -1,7 +1,7 @@
 import os
 import math
 from .audio import FRAME_RATE, BLOCK_SIZE, FRAME_SIZE, FRAMES_PER_BLOCK
-from .audio import BLOCKS_PER_SECOND, open_wavefile, add_blocks
+from .audio import BLOCKS_PER_SECOND, open_wavefile, sum_blocks
 
 
 def _allocate_buffer(start, nframes):
@@ -99,7 +99,7 @@ def save_mix(filename, clips):
     outfile = open_wavefile(filename, 'wb')
     pos = start_block
     while pos < end_block:
-        outfile.writeframes(add_blocks(clip.get_block(pos) for clip in clips))
+        outfile.writeframes(sum_blocks(clip.get_block(pos) for clip in clips))
         pos += 1
 
     outfile.close()
