@@ -203,6 +203,7 @@ class GUI(Gtk.Window):
 
     def close(self, *_, **__):
         if not self.done:
+            Gtk.main_quit()
             self.transport.stop()
             self.transport.save()
             self.transport.save_mix()
