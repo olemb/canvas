@@ -19,10 +19,6 @@ def _allocate_buffer(start, nframes):
 
 
 class Clip:
-    @classmethod
-    def from_json(cls, obj):
-        return cls(**obj)
-
     def __init__(self, filename, start=0, y=0, muted=False, load=True,
                  length=0):
         self.filename = filename
