@@ -1,7 +1,9 @@
 Clip Objects
 ------------
 
-External API (for GUI)::
+External API (for GUI):
+
+.. code-block:: python
 
     clip = Clip('test.wav', start=0.22, y=0.5, muted=False)
 
@@ -14,7 +16,9 @@ External API (for GUI)::
                     # clip.end will grow as new data is recorded.
                     # (Read only for GUI.)
 
-Internal API (for transport / audio engine)::
+Internal API (for transport / audio engine):
+
+.. code-block:: python
 
     # For internal use:
     clip.start_block  # Start position in blocks.
@@ -29,7 +33,7 @@ Internal API (for transport / audio engine)::
 Summing Audio
 ^^^^^^^^^^^^^
 
-::
+.. code-block:: python
 
     import audio
 
