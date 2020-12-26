@@ -148,8 +148,6 @@ class Timeline:
         ctx.restore()
 
     def get_collision(self, x, y):
-        # TODO: why is this function called tons of times every time
-        # you click?
         clips = []
         for (box, clip) in self.collision_boxes:
             (cx, cy, width, height) = box

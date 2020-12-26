@@ -127,7 +127,7 @@ class GUI(Gtk.Window):
 
             if clips:
                 # Just drag the first clip.
-                # (TODO: drag selected clips?)
+                # (TODO: drag all selected clips?)
                 self.clips_to_drag = clips[:1]
             else:
                 self.transport.deselect_all()
