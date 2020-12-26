@@ -127,7 +127,7 @@ class GUI(Gtk.Window):
 
             if clips:
                 # Just drag the first clip.
-                # (Todo: drag selected clips?)
+                # (TODO: drag selected clips?)
                 self.clips_to_drag = clips[:1]
             else:
                 self.transport.deselect_all()
@@ -159,14 +159,14 @@ class GUI(Gtk.Window):
                     self.dragging_clips = True
         elif self.dragging_cursor:
             self.timeline.set_cursor(self.last_x, self.last_y)
-            # Todo: scrub.
+            # TODO: scrub.
 
         self.draw()
         self.mouse_moved = True
 
     def on_button_release(self, widget, event):
         # Deselect all clips.
-        # Todo: shift?
+        # TODO: shift?
         shift_held = bool(int(event.state) & 1)
 
         if event.button == 1:
@@ -176,7 +176,7 @@ class GUI(Gtk.Window):
                 if self.clips_to_drag:
                     # Deselect other clips unless shift is
                     # held down. (1 == shift.)
-                    # Todo: this should use SHIFT_MASK but
+                    # TODO: this should use SHIFT_MASK but
                     # there's no obvious way to do that.
                     clip = self.clips_to_drag[0]
 

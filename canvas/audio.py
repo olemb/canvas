@@ -11,7 +11,7 @@ NUM_CHANNELS = 2
 FRAME_SIZE = SAMPLE_WIDTH * NUM_CHANNELS
 SILENCE = b'\x00' * BLOCK_SIZE
 
-# Todo: not sure if these are correct.
+# TODO: not sure if these are correct.
 FRAMES_PER_BLOCK = int(BLOCK_SIZE / FRAME_SIZE)
 
 BYTES_PER_SECOND = FRAME_RATE * FRAME_SIZE

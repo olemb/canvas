@@ -51,7 +51,7 @@ class Transport:
         return sum_blocks(clip.get_block(pos) for clip in clips)
 
     def _sync(self):
-        # Todo: timeout.
+        # TODO: timeout.
         self._sync_event.clear()
         self._sync_event.wait()
 
