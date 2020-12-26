@@ -91,10 +91,7 @@ def save_mix(filename, clips):
     start_block = math.floor(start * BLOCKS_PER_SECOND)
     end_block = math.ceil(end * BLOCKS_PER_SECOND)
 
-    outfile = open_wavefile(filename, 'wb')
-    pos = start_block
-    while pos < end_block:
-        outfile.writeframes(sum_blocks(clip.get_block(pos) for clip in clips))
-        pos += 1
-
-    outfile.close()
+    with open_wavefile(filename, 'wb') as outfile:
+        for pos in range(start_block, end_block):
+            block = sum_blocks(clip.get_block(pos) for clip in clips)
+            outfile.writeframes(block)
