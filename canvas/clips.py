@@ -71,9 +71,8 @@ class Clip:
 
     def __repr__(self):
         filename = os.path.basename(self.filename)
-        return ('Clip({filename!r}, start={c.start:.2f},'
-                ' y={c.y:.2f}, muted={c.muted})').format(filename=filename,
-                                                        c=self)
+        return (f'Clip({filename!r}, start={self.start:.2f},'
+                f' y={self.y:.2f}, muted={self.muted})')
 
 
 def get_start_and_end(clips):
