@@ -11,8 +11,7 @@ NUM_CHANNELS = 2
 FRAME_SIZE = SAMPLE_WIDTH * NUM_CHANNELS
 SILENCE = b'\x00' * BLOCK_SIZE
 
-# TODO: not sure if these are correct.
-FRAMES_PER_BLOCK = int(BLOCK_SIZE / FRAME_SIZE)
+FRAMES_PER_BLOCK = BLOCK_SIZE // FRAME_SIZE
 
 BYTES_PER_SECOND = FRAME_RATE * FRAME_SIZE
 SECONDS_PER_BYTE = 1 / BYTES_PER_SECOND
@@ -20,7 +19,7 @@ SECONDS_PER_BLOCK = BLOCK_SIZE * SECONDS_PER_BYTE
 BLOCKS_PER_SECOND = 1 / SECONDS_PER_BLOCK
 
 def sum_blocks(blocks):
-    """Return a block where with the sum of the samples on all blocks.
+    """Return a block where with the sum of the samples of all blocks.
 
     Takes an interable of blocks (byte strings). If no blocks are passed
     a silent block (all zeroes) will be returned.
