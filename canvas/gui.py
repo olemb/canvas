@@ -1,8 +1,8 @@
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject
-from .timeline import Timeline
-from .transport import Transport
+from gi.repository import Gtk, Gdk, GObject  # noqa: E402
+from .timeline import Timeline    # noqa: E402
+from .transport import Transport    # noqa: E402
 
 
 class GUI(Gtk.Window):
