@@ -75,15 +75,14 @@ class Transport:
             clip.selected = False
 
     def mute_or_unmute_selection(self):
-        # Get selected clips.
-        clips = [c for c in self.clips if c.selected]
+        selected_clips = [clip for clip in self.clips if clip.selected]
 
-        if any(c for c in clips if not c.muted):
+        if any(clip for clip in selected_clips if not clip.muted):
             mute_clips = True
         else:
             mute_clips = False
 
-        for clip in clips:
+        for clip in selected_clips:
             clip.muted = mute_clips
 
     @property
