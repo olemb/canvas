@@ -5,6 +5,7 @@ from contextlib import closing
 from .gui import GUI
 from .transport import Transport
 
+
 def get_dirname():
     now = int(time.time())
     return os.path.expanduser(f'~/Desktop/canvas-{now}')

@@ -4,6 +4,7 @@ from gi.repository import Gtk, Gdk, GObject
 from .timeline import Timeline
 from .transport import Transport
 
+
 class GUI(Gtk.Window):
     def __init__(self, dirname):
         super(GUI, self).__init__()

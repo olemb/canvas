@@ -18,6 +18,7 @@ SECONDS_PER_BYTE = 1 / BYTES_PER_SECOND
 SECONDS_PER_BLOCK = BLOCK_SIZE * SECONDS_PER_BYTE
 BLOCKS_PER_SECOND = 1 / SECONDS_PER_BLOCK
 
+
 def sum_blocks(blocks):
     """Return a block where with the sum of the samples of all blocks.
 

@@ -1,6 +1,7 @@
 import cairo
 from .clips import get_start_and_end
 
+
 def convert_color(string):
     rgba = []
     string = string.lstrip('#')
@@ -8,6 +9,7 @@ def convert_color(string):
         char, string = string[:2], string[2:]
         rgba.append(int(char, 16) / 255)
     return tuple(rgba)
+
 
 COLORS = {
     'background': convert_color('000000ff')[:3],
@@ -24,6 +26,7 @@ COLORS = {
 CLIP_HEIGHT_SCALE = 0.048
 MIN_DRAW_LENGTH = 60 * 1
 MIN_CLIP_LENGTH = 8
+
 
 class Timeline:
     def __init__(self, transport):
