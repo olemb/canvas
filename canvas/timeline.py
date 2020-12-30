@@ -100,12 +100,14 @@ class Timeline:
                 color = COLORS['normal-clip']
 
         ctx = self.context
-
-        box = (clip.start * self.xscale,
-               (clip.y * self.yscale) - (self.clip_height / 2),
-               max(MIN_CLIP_LENGTH, clip.length * self.xscale),
-               self.clip_height)
         ctx.save()
+
+        box = (
+            clip.start * self.xscale,
+            (clip.y * self.yscale) - (self.clip_height / 2),
+            max(MIN_CLIP_LENGTH, clip.length * self.xscale),
+            self.clip_height,
+        )
 
         ctx.set_source_rgba(*color)
         stroke_color = COLORS['clip-stroke']
