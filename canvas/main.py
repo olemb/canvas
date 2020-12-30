@@ -12,8 +12,12 @@ def get_dirname():
 
 
 @click.command()
-@click.option('--mix', default=None, help='Mix down recording to wav file.',
-              type=click.Path())
+@click.option(
+    '--mix',
+    default=None,
+    help='Mix down recording to wav file.',
+    type=click.Path()
+)
 @click.argument('dirname', type=click.Path(), nargs=-1)
 def main(mix, dirname):
     if len(dirname) == 0:

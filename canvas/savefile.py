@@ -32,7 +32,8 @@ def write_savefile(filename, clips):
             'y': clip.y,
             'muted': clip.muted,
         }
-        for clip in clips]
+        for clip in clips
+    ]
 
     with open(filename, 'wt') as outfile:
         json.dump({'clips': fclips}, outfile, indent=2, sort_keys=True)

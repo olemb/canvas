@@ -43,8 +43,7 @@ class Timeline:
     def _make_surface(self, width, height):
         if self.surface is not None:
             self.surface.finish()
-        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                          width, height)
+        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
         self.context = cairo.Context(self.surface)
 
     def render(self, width, height):

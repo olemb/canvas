@@ -1,8 +1,8 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GObject  # noqa: E402
-from .timeline import Timeline    # noqa: E402
-from .transport import Transport    # noqa: E402
+from .timeline import Timeline  # noqa: E402
+from .transport import Transport  # noqa: E402
 
 
 class GUI(Gtk.Window):
@@ -145,7 +145,7 @@ class GUI(Gtk.Window):
         if self.clips_to_drag:
             if self.dragging_clips:
                 for clip in self.clips_to_drag:
-                    clip.y += (dy / self.timeline.yscale)
+                    clip.y += dy / self.timeline.yscale
                     # Don't allow dragging the clip outside the screen.
                     clip.y = max(0, clip.y)
                     clip.y = min(1, clip.y)

@@ -7,15 +7,17 @@ from .audio import BLOCKS_PER_SECOND, open_wavefile, sum_blocks
 def _allocate_buffer(start, nframes):
     # Start padding in frames.
     start_padding = math.floor((start * FRAME_RATE) % 1)
-    total_nframes = (start_padding + nframes)
+    total_nframes = start_padding + nframes
     num_blocks = total_nframes / FRAMES_PER_BLOCK
     if num_blocks % 1:
         num_blocks += 1
     num_blocks = int(num_blocks)
 
-    return {'length': nframes / FRAME_RATE,
-            'buffer': bytearray(num_blocks * BLOCK_SIZE),
-            'start_byte': start_padding * FRAME_SIZE}
+    return {
+        'length': nframes / FRAME_RATE,
+        'buffer': bytearray(num_blocks * BLOCK_SIZE),
+        'start_byte': start_padding * FRAME_SIZE,
+    }
 
 
 class Clip:
@@ -51,7 +53,7 @@ class Clip:
                 data = infile.readframes(read_size)
                 if not data:
                     break
-                self.audio[bytepos:bytepos+len(data)] = data
+                self.audio[bytepos:bytepos + len(data)] = data
                 bytepos += len(data)
 
             self.length = nframes / FRAME_RATE
@@ -71,8 +73,10 @@ class Clip:
 
     def __repr__(self):
         filename = os.path.basename(self.filename)
-        return (f'Clip({filename!r}, start={self.start:.2f},'
-                f' y={self.y:.2f}, muted={self.muted})')
+        return (
+            f'Clip({filename!r}, start={self.start:.2f},'
+            f' y={self.y:.2f}, muted={self.muted})'
+        )
 
 
 def get_start_and_end(clips):
@@ -80,8 +84,10 @@ def get_start_and_end(clips):
     if len(clips) == 0:
         return (0, 0)
     else:
-        return (min(clip.start for clip in clips),
-                max(clip.start + clip.length for clip in clips))
+        return (
+            min(clip.start for clip in clips),
+            max(clip.start + clip.length for clip in clips),
+        )
 
 
 def save_mix(filename, clips):
