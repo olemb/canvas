@@ -12,7 +12,7 @@ def convert_color(string):
 
 
 COLORS = {
-    'background': convert_color('000000ff')[:3],
+    'background': convert_color('000000'),
     'normal-clip': convert_color('c4880068'),
     'selected-clip': convert_color('0092d468'),
     'muted-clip': convert_color('c4c3c438'),
