@@ -37,30 +37,26 @@ class Timeline:
         self.height = None
         self.xscale = None
         self.yscale = None
-        self.collision_boxes = []
         self.clip_height = None
-
-        self._make_surface(10, 10)
+        self.collision_boxes = []
 
     def _make_surface(self, width, height):
+        if self.surface is not None:
+            self.surface.finish()
         self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
                                           width, height)
         self.context = cairo.Context(self.surface)
-        self.clip_height = height * CLIP_HEIGHT_SCALE
 
     def render(self, width, height):
-        if self.surface is None:
+        if (width, height) != (self.width, self.height):
             self._make_surface(width, height)
-        elif (width, height) != (self.surface.get_width(),
-                                 self.surface.get_height()):
-            self.surface.finish()
-            self._make_surface(width, height)
+            self.width = width
+            self.height = height
+            self.clip_height = height * CLIP_HEIGHT_SCALE
 
         clips = self.transport.clips
         _, end = get_start_and_end(clips)
         end = max(MIN_DRAW_LENGTH, end)
-        self.width = width
-        self.height = height
         # Subtract 5 so the recording cursor will not be off-screen.
         self.xscale = 1 / (end) * (self.width - 5)
         self.yscale = self.height
