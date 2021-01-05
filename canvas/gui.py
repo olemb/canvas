@@ -127,9 +127,11 @@ class GUI(Gtk.Window):
             clips = self.timeline.get_collision(event.x, event.y)
 
             if clips:
-                # Just drag the first clip.
-                # (TODO: drag all selected clips?)
-                self.clips_to_drag = clips[:1]
+                if clips[0].selected:
+                    self.clips_to_drag = self.transport.get_selected_clips()
+                else:
+                    # Just drag the first clip.
+                    self.clips_to_drag = clips[:1]
             else:
                 self.transport.deselect_all()
                 self.timeline.set_cursor(event.x, event.y)
