@@ -162,7 +162,6 @@ class GUI(Gtk.Window):
                     self.dragging_clips = True
         elif self.dragging_cursor:
             self.timeline.set_cursor(self.last_x, self.last_y)
-            # TODO: scrub.
 
         self.draw()
         self.mouse_moved = True
