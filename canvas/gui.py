@@ -107,12 +107,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def mousePressEvent(self, event):
         # TODO: why is this not found?
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
             self.mouse_moved = False
-            self.last_x = self.start_x = event.x
-            self.last_y = self.start_y = event.y
+            self.last_x = self.start_x = event.x()
+            self.last_y = self.start_y = event.y()
 
-            clips = self.timeline.get_collision(event.x, event.y)
+            clips = self.timeline.get_collision(event.x(), event.y())
 
             if clips:
                 if clips[0].selected:
@@ -122,16 +122,13 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.clips_to_drag = clips[:1]
             else:
                 self.transport.deselect_all()
-                self.timeline.set_cursor(event.x, event.y)
+                self.timeline.set_cursor(event.x(), event.y())
                 self.dragging_cursor = True
         self.request_draw()
 
     def mouseMoveEvent(self, event):
-        print(event.x)
-        raise NotImplemented()
-
-        dx = event.x - self.last_x
-        dy = event.y - self.last_y
+        dx = event.x() - self.last_x
+        dy = event.y() - self.last_y
         self.last_x += dx
         self.last_y += dy
 
@@ -145,11 +142,11 @@ class MainWindow(QtWidgets.QMainWindow):
             else:
                 # If we've moved more than 5 pixels from
                 # where we clicked, start dragging the clip.
-                dx2 = abs(event.x - self.start_x)
-                dy2 = abs(event.y - self.start_y)
+                dx2 = abs(event.x() - self.start_x)
+                dy2 = abs(event.y() - self.start_y)
                 if dx2 > 5 or dy2 > 5:
-                    self.start_x = event.x
-                    self.start_y = event.y
+                    self.start_x = event.x()
+                    self.start_y = event.y()
                     self.dragging_clips = True
         elif self.dragging_cursor:
             self.timeline.set_cursor(self.last_x, self.last_y)
@@ -158,11 +155,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mouse_moved = True
 
     def mouseReleaseEvent(self, event):
+        return
+
         # TODO: implement:
         ## shift_held = bool(int(event.state) & 1)
         shift_held = False
 
-        if event.button == 1:
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
             if self.dragging_clips:
                 self.autosave()
             else:
