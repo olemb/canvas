@@ -87,15 +87,10 @@ class Timeline:
             self.clip_height,
         )
         
-        x1 = box[0]
-        x2 = box[2]
-        y = clip.y * self.yscale
-
-        self.pen.setWidth(self.clip_height)
+        self.pen.setWidth(0)
         self.pen.setColor(color)
         self.painter.setPen(self.pen)
-        self.painter.drawLine(x1, y, x2, y)
-        print(clip)
+        self.painter.drawRect(*box)
 
         return box
 
