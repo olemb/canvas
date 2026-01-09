@@ -66,8 +66,6 @@ class MainWindow(QtWidgets.QMainWindow):
         context.paint()
 
     def keyPressEvent(self, event):
-        print(self.transport.pos)
-    
         key_name = event.text()
         key = event.key()
         qt = QtCore.Qt
@@ -185,23 +183,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def autosave(self):
         self.transport.save()
 
-    def run(self):
-        self.app.exec_()
-
-    def close(self, *_, **__):
-        if not self.done:
-            self.app.quit()
-            print(self.transport.pos)
-            self.transport.stop()
-            self.transport.save()
-            self.transport.save_mix()
-            self.transport.close()
-            self.done = True
-
 
 def run(transport):
     # TODO: handle sys.argv here?
     app = QtWidgets.QApplication([])
     window = MainWindow(transport)
     window.show()
+
     app.exec()
+    # self.app.exec_()
+
+    transport.stop()
+    transport.save()
+    transport.save_mix()
+    transport.close()
+    window.done = True
+    print(transport.clips)
+

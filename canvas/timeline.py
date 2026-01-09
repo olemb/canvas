@@ -7,19 +7,20 @@ def convert_color(string):
     string = string.lstrip('#')
     while string:
         char, string = string[:2], string[2:]
-        rgba.append(int(char, 16) / 255)
-    return tuple(rgba)
+        rgba.append(int(char, 16))
+    return QtGui.QColor(*rgba)
 
 
 COLORS = {
-    'background': convert_color('000000'),
-    'normal-clip': convert_color('c4880068'),
-    'selected-clip': convert_color('0092d468'),
-    'muted-clip': convert_color('c4c3c438'),
-    'muted-selected-clip': convert_color('0092d438'),
+    'background': convert_color('#000000ff'),
+    'normal-clip': convert_color('#c4880068'),
+    'selected-clip': convert_color('#0092d468'),
+    'muted-clip': convert_color('#c4c3c438'),
+    'muted-selected-clip': convert_color('#0092d438'),
     'clip-stroke': None,
-    'play-cursor': convert_color('dddddd7f'),
-    'record-cursor': convert_color('ff0000ff'),
+    'play-cursor': convert_color('#dddddd7f'),
+    'record-cursor': convert_color('#ff0000ff'),
+    'y-cursor': convert_color('#7f7f7f26'),
 }
 
 
@@ -43,7 +44,6 @@ class Timeline:
         self.pixmap = pixmap
         self.painter = QtGui.QPainter(pixmap)
         self.pen = QtGui.QPen()
-        self.painter.setPen(self.pen)
 
         self.width = pixmap.width()
         self.height = pixmap.height()
@@ -56,14 +56,13 @@ class Timeline:
         self.xscale = 1 / (end) * (self.width - 5)
         self.yscale = self.height
 
-        self.pixmap.fill(QtGui.QColor('white'))
+        self.pixmap.fill(QtGui.QColor('black'))
 
-        #self.collision_boxes = [(self.draw_clip(clip), clip) for clip in clips]
-        #self.collision_boxes.reverse()
+        self.collision_boxes = [(self.draw_clip(clip), clip) for clip in clips]
+        self.collision_boxes.reverse()
         self.draw_cursor()
 
-        del self.painter
-        self.painter = None
+        self.painter.end()
 
     def draw_clip(self, clip):
         if self.transport.solo:
@@ -81,51 +80,47 @@ class Timeline:
             else:
                 color = COLORS['normal-clip']
 
-            box = (
-                clip.start * self.xscale,
-                (clip.y * self.yscale) - (self.clip_height / 2),
-                max(MIN_CLIP_LENGTH, clip.length * self.xscale),
-                self.clip_height,
-            )
+        box = (
+            clip.start * self.xscale,
+            (clip.y * self.yscale) - (self.clip_height / 2),
+            max(MIN_CLIP_LENGTH, clip.length * self.xscale),
+            self.clip_height,
+        )
+        
+        x1 = box[0]
+        x2 = box[2]
+        y = clip.y * self.yscale
 
-            ctx.set_source_rgba(*color)
-            stroke_color = COLORS['clip-stroke']
-            if stroke_color:
-                ctx.rectangle(*box)
-                ctx.fill_preserve()
-                ctx.set_source_rgba(*stroke_color)
-                ctx.set_line_width(1)
-                ctx.stroke()
-            else:
-                ctx.rectangle(*box)
-                ctx.fill()
+        self.pen.setWidth(self.clip_height)
+        self.pen.setColor(color)
+        self.painter.setPen(self.pen)
+        self.painter.drawLine(x1, y, x2, y)
+        print(clip)
 
-            ctx.restore()
-
-            return box
+        return box
 
     def draw_cursor(self):
         y = self.transport.y
 
         if self.transport.recording:
-            self.pen.setColor(QtGui.QColor(*COLORS['record-cursor']))
+            self.pen.setColor(COLORS['record-cursor'])
         else:
-            self.pen.setColor(QtGui.QColor(*COLORS['play-cursor']))
+            self.pen.setColor(COLORS['play-cursor'])
+            pass
+        self.pen.setWidth(2)
+        self.painter.setPen(self.pen)
 
         # Vertical cursor (pos).
         x = self.transport.pos * self.xscale
-        self.pen.setWidth(5)
         self.painter.drawLine(x, 0, x, self.height)
-
-        return
 
         # Horizontal cursor (y).
         height = self.clip_height
         x = 0
         y = (y * self.height) - (self.clip_height / 2)
-        ctx.set_source_rgba(0.5, 0.5, 0.5, 0.15)
-        ctx.rectangle(x, y, self.width, height)
-        ctx.fill()
+        self.pen.setColor(COLORS['y-cursor'])
+        self.painter.setPen(self.pen)
+        self.painter.drawRect(x, y, self.width, height)
 
     def get_collision(self, x, y):
         clips = []
