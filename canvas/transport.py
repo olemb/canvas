@@ -49,9 +49,8 @@ class Transport:
         return sum_blocks(clip.get_block(pos) for clip in clips)
 
     def _sync(self):
-        # TODO: timeout.
         self._sync_event.clear()
-        self._sync_event.wait()
+        self._sync_event.wait(timeout=0.2)
 
     def _audio_callback(self, inblock):
         self._sync_event.set()

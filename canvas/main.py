@@ -2,7 +2,7 @@ import os
 import time
 import click
 from contextlib import closing
-from .gui import GUI
+from .gui import run
 from .transport import Transport
 
 
@@ -32,6 +32,4 @@ def main(mix, dirname):
         transport.load()
         transport.save_mix(mix)
     else:
-        with closing(GUI(dirname)) as gui:
-            gui.transport.load()
-            gui.run()
+        run(Transport(dirname))

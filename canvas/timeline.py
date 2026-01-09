@@ -1,6 +1,5 @@
-import cairo
+# https://www.pythonguis.com/tutorials/pyside6-bitmap-graphics/
 from .clips import get_start_and_end
-
 
 def convert_color(string):
     rgba = []
@@ -28,74 +27,57 @@ MIN_DRAW_LENGTH = 60 * 1
 MIN_CLIP_LENGTH = 8
 
 
-class Timeline:
-    def __init__(self, transport):
-        self.transport = transport
-        self.surface = None
-        self.context = None
-        self.width = None
-        self.height = None
-        self.xscale = None
-        self.yscale = None
-        self.clip_height = None
-        self.collision_boxes = []
 
-    def _make_surface(self, width, height):
-        if self.surface is not None:
-            self.surface.finish()
-        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
-        self.context = cairo.Context(self.surface)
+def render_timeline(pixmap, transport):
+    width = None
+    height = None
+    xscale = None
+    yscale = None
+    clip_height = None
+    collision_boxes = []
+    
+    width = pixmap.width()
+    height = pixmap.height()
+    clip_height = height * CLIP_HEIGHT_SCALE
 
-    def render(self, width, height):
-        if (width, height) != (self.width, self.height):
-            self._make_surface(width, height)
-            self.width = width
-            self.height = height
-            self.clip_height = height * CLIP_HEIGHT_SCALE
+    # TODO: use COLORS['background'] instead.
+    pixmap.fill('black')    
+    
+    return
 
-        clips = self.transport.clips
-        _, end = get_start_and_end(clips)
-        end = max(MIN_DRAW_LENGTH, end)
-        # Subtract 5 so the recording cursor will not be off-screen.
-        self.xscale = 1 / (end) * (self.width - 5)
-        self.yscale = self.height
+    clips = self.transport.clips
+    _, end = get_start_and_end(clips)
+    end = max(MIN_DRAW_LENGTH, end)
+    # Subtract 5 so the recording cursor will not be off-screen.
+    self.xscale = 1 / (end) * (self.width - 5)
+    self.yscale = self.height
 
-        self.draw_background()
-
-        ctx = self.context
-
-        ctx.save()
-        self.collision_boxes = [(self.draw_clip(clip), clip) for clip in clips]
-        self.collision_boxes.reverse()
-        self.draw_cursor()
-        ctx.restore()
-
-        return self.surface
-
-    def draw_background(self):
-        ctx = self.context
-        ctx.set_source_rgb(*COLORS['background'])
-        ctx.rectangle(0, 0, self.width, self.height)
-        ctx.fill()
-
-    def draw_clip(self, clip):
-        if self.transport.solo:
-            if clip.selected:
-                color = COLORS['selected-clip']
-            else:
-                color = COLORS['muted-clip']
+    ctx = self.context
+    
+    ctx.save()
+    self.collision_boxes = [(self.draw_clip(clip), clip) for clip in clips]
+    self.collision_boxes.reverse()
+    self.draw_cursor()
+    ctx.restore()
+    
+def draw_clip(self, clip):
+    if self.transport.solo:
+        if clip.selected:
+            color = COLORS['selected-clip']
         else:
-            if clip.selected and clip.muted:
-                color = COLORS['muted-selected-clip']
-            elif clip.selected:
-                color = COLORS['selected-clip']
-            elif clip.muted:
-                color = COLORS['muted-clip']
-            else:
-                color = COLORS['normal-clip']
-
-        ctx = self.context
-        ctx.save()
+            color = COLORS['muted-clip']
+    else:
+        if clip.selected and clip.muted:
+            color = COLORS['muted-selected-clip']
+        elif clip.selected:
+            color = COLORS['selected-clip']
+        elif clip.muted:
+            color = COLORS['muted-clip']
+        else:
+            color = COLORS['normal-clip']
+            
+            ctx = self.context
+            ctx.save()
 
         box = (
             clip.start * self.xscale,
@@ -123,6 +105,7 @@ class Timeline:
     def draw_cursor(self):
         y = self.transport.y
 
+        painter = QtGui.Painter(self.pixmap)
         ctx = self.context
         ctx.save()
         if self.transport.recording:
@@ -157,7 +140,7 @@ class Timeline:
 
     def set_cursor(self, x, y):
         # This is done here because the cursor must be constrained within
-        # the screen, not the recording.
+        # the timeline display, not the recording.
         # (Don't allow dragging the cursor outside the screen.)
         self.transport.pos = max(0, (min(self.width, x) / self.xscale))
         self.transport.y = max(0, min(1, y / self.yscale))
