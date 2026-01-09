@@ -1,7 +1,7 @@
 # https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QWidget.html
 # https://doc.qt.io/qtforpython-6/examples/example_quick_scenegraph_openglunderqml.html#example-quick-scenegraph-openglunderqml
 from PySide6 import QtWidgets, QtGui, Qt, QtCore
-from .timeline import render_timeline  # noqa: E402
+from .timeline import Timeline  # noqa: E402
 from .transport import Transport  # noqa: E402
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -11,10 +11,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setMouseTracking(True)
 
         self.transport = transport
+        self.timeline = Timeline(transport)
         self.done = False
 
         self.label = QtWidgets.QLabel()
-        self.pixmap = QtGui.QPixmap(400, 300)
+        self.pixmap = QtGui.QPixmap(800, 600)
         self.label.setPixmap(self.pixmap)
         self.setCentralWidget(self.label)
 
@@ -35,18 +36,14 @@ class MainWindow(QtWidgets.QMainWindow):
         ## self.area.add_events(Gdk.EventMask.ALL_EVENTS_MASK)
         # self.area.connect('draw', self.on_draw)
 
-        ## self.setTitle('Canvas')
-        # self.set_position(Gtk.WindowPosition.CENTER)
-        # self.on_timer()
-
         self.draw()
 
     def draw(self):
         pixmap = self.label.pixmap()
-        render_timeline(pixmap, self.transport)
+        self.timeline.render(pixmap)
         self.label.setPixmap(pixmap)
-        # self.timer = QtCore.QTimer()
-        # self.timer.singleShot(100, self.draw)
+        self.timer = QtCore.QTimer()
+        self.timer.singleShot(100, self.draw)
 
     def request_draw(self):
         ##pos = self.transport.pos
