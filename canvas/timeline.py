@@ -80,42 +80,32 @@ class Timeline:
             else:
                 color = COLORS['normal-clip']
 
-        box = (
+        box = [
             clip.start * self.xscale,
             (clip.y * self.yscale) - (self.clip_height / 2),
             max(MIN_CLIP_LENGTH, clip.length * self.xscale),
             self.clip_height,
-        )
-        
-        self.pen.setWidth(0)
-        self.pen.setColor(color)
-        self.painter.setPen(self.pen)
-        self.painter.drawRect(*box)
+        ]
+
+        self.painter.fillRect(box[0], box[1], box[2], box[3], color)
 
         return box
 
     def draw_cursor(self):
-        y = self.transport.y
-
-        if self.transport.recording:
-            self.pen.setColor(COLORS['record-cursor'])
-        else:
-            self.pen.setColor(COLORS['play-cursor'])
-            pass
-        self.pen.setWidth(2)
-        self.painter.setPen(self.pen)
-
         # Vertical cursor (pos).
         x = self.transport.pos * self.xscale
-        self.painter.drawLine(x, 0, x, self.height)
+        y = self.transport.y
+        if self.transport.recording:
+            color = COLORS['record-cursor']
+        else:
+            color = COLORS['play-cursor']
+        self.painter.fillRect(x-1, 0, 2, self.height, color)
 
         # Horizontal cursor (y).
-        height = self.clip_height
         x = 0
         y = (y * self.height) - (self.clip_height / 2)
-        self.pen.setColor(COLORS['y-cursor'])
-        self.painter.setPen(self.pen)
-        self.painter.drawRect(x, y, self.width, height)
+        height = self.clip_height
+        self.painter.fillRect(x, y, self.width, height, COLORS['y-cursor'])
 
     def get_collision(self, x, y):
         clips = []

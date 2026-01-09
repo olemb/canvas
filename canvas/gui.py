@@ -198,5 +198,4 @@ def run(transport):
     transport.save_mix()
     transport.close()
     window.done = True
-    print(transport.clips)
-
+    
