@@ -7,9 +7,10 @@ from .transport import Transport  # noqa: E402
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, transport):
         super().__init__()
-        
-        self.setMouseTracking(True)
 
+        self.setWindowTitle('Canvas')
+        self.setMouseTracking(True)
+        
         self.transport = transport
         self.timeline = Timeline(transport)
         self.done = False
