@@ -1,4 +1,4 @@
-sounddevice>=0.5.3
-pyside6
 audioop-lts; python_version>='3.13'
 click
+pyside6
+sounddevice>=0.5.3
