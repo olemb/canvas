@@ -1,6 +1,7 @@
 # https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QWidget.html
 # https://doc.qt.io/qtforpython-6/examples/example_quick_scenegraph_openglunderqml.html#example-quick-scenegraph-openglunderqml
-from PySide6 import QtWidgets, QtGui, Qt, QtCore
+from PySide6 import QtWidgets, QtGui, QtCore
+from PySide6.QtGui import QGuiApplication
 from .timeline import Timeline  # noqa: E402
 from .transport import Transport  # noqa: E402
 
@@ -136,9 +137,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mouse_moved = True
 
     def mouseReleaseEvent(self, event):
-        # TODO: implement:
-        ## shift_held = bool(int(event.state) & 1)
-        shift_held = False
+        modifiers = QGuiApplication.keyboardModifiers()
+        shift_held = bool(modifiers & QtCore.Qt.ShiftModifier)
 
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
             if self.dragging_clips:
