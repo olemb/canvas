@@ -1,25 +1,26 @@
-import cairo
+# https://www.pythonguis.com/tutorials/pyside6-bitmap-graphics/
+from PySide6 import QtGui
 from .clips import get_start_and_end
-
 
 def convert_color(string):
     rgba = []
     string = string.lstrip('#')
     while string:
         char, string = string[:2], string[2:]
-        rgba.append(int(char, 16) / 255)
-    return tuple(rgba)
+        rgba.append(int(char, 16))
+    return QtGui.QColor(*rgba)
 
 
 COLORS = {
-    'background': convert_color('000000'),
-    'normal-clip': convert_color('c4880068'),
-    'selected-clip': convert_color('0092d468'),
-    'muted-clip': convert_color('c4c3c438'),
-    'muted-selected-clip': convert_color('0092d438'),
+    'background': convert_color('#000000ff'),
+    'normal-clip': convert_color('#c4880068'),
+    'selected-clip': convert_color('#0092d468'),
+    'muted-clip': convert_color('#c4c3c438'),
+    'muted-selected-clip': convert_color('#0092d438'),
     'clip-stroke': None,
-    'play-cursor': convert_color('dddddd7f'),
-    'record-cursor': convert_color('ff0000ff'),
+    'play-cursor': convert_color('#dddddd7f'),
+    'record-cursor': convert_color('#ff0000ff'),
+    'y-cursor': convert_color('#7f7f7f26'),
 }
 
 
@@ -28,11 +29,10 @@ MIN_DRAW_LENGTH = 60 * 1
 MIN_CLIP_LENGTH = 8
 
 
+
 class Timeline:
     def __init__(self, transport):
         self.transport = transport
-        self.surface = None
-        self.context = None
         self.width = None
         self.height = None
         self.xscale = None
@@ -40,18 +40,14 @@ class Timeline:
         self.clip_height = None
         self.collision_boxes = []
 
-    def _make_surface(self, width, height):
-        if self.surface is not None:
-            self.surface.finish()
-        self.surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height)
-        self.context = cairo.Context(self.surface)
+    def render(self, pixmap):
+        self.pixmap = pixmap
+        self.painter = QtGui.QPainter(pixmap)
+        self.pen = QtGui.QPen()
 
-    def render(self, width, height):
-        if (width, height) != (self.width, self.height):
-            self._make_surface(width, height)
-            self.width = width
-            self.height = height
-            self.clip_height = height * CLIP_HEIGHT_SCALE
+        self.width = pixmap.width()
+        self.height = pixmap.height()
+        self.clip_height = pixmap.height() * CLIP_HEIGHT_SCALE        
 
         clips = self.transport.clips
         _, end = get_start_and_end(clips)
@@ -60,23 +56,13 @@ class Timeline:
         self.xscale = 1 / (end) * (self.width - 5)
         self.yscale = self.height
 
-        self.draw_background()
+        self.pixmap.fill(QtGui.QColor('black'))
 
-        ctx = self.context
-
-        ctx.save()
         self.collision_boxes = [(self.draw_clip(clip), clip) for clip in clips]
         self.collision_boxes.reverse()
         self.draw_cursor()
-        ctx.restore()
 
-        return self.surface
-
-    def draw_background(self):
-        ctx = self.context
-        ctx.set_source_rgb(*COLORS['background'])
-        ctx.rectangle(0, 0, self.width, self.height)
-        ctx.fill()
+        self.painter.end()
 
     def draw_clip(self, clip):
         if self.transport.solo:
@@ -94,58 +80,32 @@ class Timeline:
             else:
                 color = COLORS['normal-clip']
 
-        ctx = self.context
-        ctx.save()
-
-        box = (
+        box = [
             clip.start * self.xscale,
             (clip.y * self.yscale) - (self.clip_height / 2),
             max(MIN_CLIP_LENGTH, clip.length * self.xscale),
             self.clip_height,
-        )
+        ]
 
-        ctx.set_source_rgba(*color)
-        stroke_color = COLORS['clip-stroke']
-        if stroke_color:
-            ctx.rectangle(*box)
-            ctx.fill_preserve()
-            ctx.set_source_rgba(*stroke_color)
-            ctx.set_line_width(1)
-            ctx.stroke()
-        else:
-            ctx.rectangle(*box)
-            ctx.fill()
-
-        ctx.restore()
+        self.painter.fillRect(box[0], box[1], box[2], box[3], color)
 
         return box
 
     def draw_cursor(self):
-        y = self.transport.y
-
-        ctx = self.context
-        ctx.save()
-        if self.transport.recording:
-            ctx.set_source_rgba(*COLORS['record-cursor'])
-        else:
-            ctx.set_source_rgba(*COLORS['play-cursor'])
-
-        # Vertical.
+        # Vertical cursor (pos).
         x = self.transport.pos * self.xscale
-        ctx.set_line_width(2)
-        ctx.move_to(x, 0)
-        ctx.line_to(x, self.height)
-        ctx.stroke()
+        y = self.transport.y
+        if self.transport.recording:
+            color = COLORS['record-cursor']
+        else:
+            color = COLORS['play-cursor']
+        self.painter.fillRect(x-1, 0, 2, self.height, color)
 
-        # Horizontal.
-        height = self.clip_height
+        # Horizontal cursor (y).
         x = 0
         y = (y * self.height) - (self.clip_height / 2)
-        ctx.set_source_rgba(0.5, 0.5, 0.5, 0.15)
-        ctx.rectangle(x, y, self.width, height)
-        ctx.fill()
-
-        ctx.restore()
+        height = self.clip_height
+        self.painter.fillRect(x, y, self.width, height, COLORS['y-cursor'])
 
     def get_collision(self, x, y):
         clips = []
@@ -157,7 +117,7 @@ class Timeline:
 
     def set_cursor(self, x, y):
         # This is done here because the cursor must be constrained within
-        # the screen, not the recording.
+        # the timeline display, not the recording.
         # (Don't allow dragging the cursor outside the screen.)
         self.transport.pos = max(0, (min(self.width, x) / self.xscale))
         self.transport.y = max(0, min(1, y / self.yscale))

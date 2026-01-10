@@ -1,16 +1,25 @@
-import gi
-gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gdk, GObject  # noqa: E402
+# https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QWidget.html
+# https://doc.qt.io/qtforpython-6/examples/example_quick_scenegraph_openglunderqml.html#example-quick-scenegraph-openglunderqml
+from PySide6 import QtWidgets, QtGui, QtCore
+from PySide6.QtGui import QGuiApplication
 from .timeline import Timeline  # noqa: E402
 from .transport import Transport  # noqa: E402
 
+class MainWindow(QtWidgets.QMainWindow):
+    def __init__(self, transport):
+        super().__init__()
 
-class GUI(Gtk.Window):
-    def __init__(self, dirname):
-        super(GUI, self).__init__()
-        self.transport = Transport(dirname)
-        self.timeline = Timeline(self.transport)
+        self.setWindowTitle('Canvas')
+        self.setMouseTracking(True)
+        
+        self.transport = transport
+        self.timeline = Timeline(transport)
         self.done = False
+
+        self.label = QtWidgets.QLabel()
+        self.pixmap = QtGui.QPixmap(800, 600)
+        self.label.setPixmap(self.pixmap)
+        self.setCentralWidget(self.label)
 
         self.start_x = 0
         self.start_y = 0
@@ -22,109 +31,66 @@ class GUI(Gtk.Window):
         self.mouse_moved = False
         self.last_cursor_pos = 0
 
-        # These two seem to do the same thing.
-        # self.fullscreen()
-        self.maximize()
-
-        self.init()
-
-    def init(self):
-        self.area = Gtk.DrawingArea()
-        self.area.set_size_request(600, 400)
-        self.area.add_events(Gdk.EventMask.ALL_EVENTS_MASK)
-        self.area.connect('draw', self.on_draw)
-        self.area.connect('button-press-event', self.on_button_press)
-        self.area.connect('button-release-event', self.on_button_release)
-        self.area.connect('motion-notify-event', self.on_mouse_motion)
-        self.add(self.area)
-
-        self.connect('key-press-event', self.on_key_press_event)
-        self.connect('key-release-event', self.on_key_release_event)
-
-        self.set_title('Timeline')
-        self.set_position(Gtk.WindowPosition.CENTER)
-        self.connect('delete-event', self.close)
-
-        self.on_timer()
-
-        self.show_all()
-
-    def on_timer(self):
-        pos = self.transport.pos
-        if pos != self.last_cursor_pos:
-            self.draw()
-        self.last_cursor_pos = pos
-        GObject.timeout_add(100, self.on_timer)
+        self.draw()
 
     def draw(self):
-        self.area.queue_draw()
+        pixmap = self.label.pixmap()
+        self.timeline.render(pixmap)
+        self.label.setPixmap(pixmap)
+        self.timer = QtCore.QTimer()
+        self.timer.singleShot(50, self.draw)
 
-    def on_draw(self, area, context):
-        width = area.get_allocated_width()
-        height = area.get_allocated_height()
-        context.set_source_surface(self.timeline.render(width, height))
-        context.paint()
+    def request_draw(self):
+        ##pos = self.transport.pos
+        ##if pos != self.last_cursor_pos:
+        # self.draw()
+        pass
+ 
+    def keyPressEvent(self, event):
+        key_name = event.text()
+        key = event.key()
+        qt = QtCore.Qt
 
-    def on_key_press_event(self, widget, event):
-        key_name = event.string
-        key = event.keyval
-
-        if key in (Gdk.KEY_BackSpace, Gdk.KEY_Delete):
+        if key in (qt.Key_Backspace, qt.Key_Delete):
             self.transport.delete()
             self.autosave()
-        elif key == Gdk.KEY_Left:
+        elif key == qt.Key_Left:
             self.transport.pos -= 1
-        elif key == Gdk.KEY_Right:
+        elif key == qt.Key_Right:
             self.transport.pos += 1
-        elif key == Gdk.KEY_Up:
+        elif key == qt.Key_Up:
             self.transport.y -= 0.05
-        elif key == Gdk.KEY_Down:
+        elif key == qt.Key_Down:
             self.transport.y += 0.05
-        elif key == Gdk.KEY_Return:
+        elif key == qt.Key_Return:
             if self.transport.toggle_recording():
                 self.autosave()
-        elif key == Gdk.KEY_space:
+        elif key == qt.Key_Space:
             self.transport.toggle_playback()
-        elif key == Gdk.KEY_Tab:
+        elif key == qt.Key_Tab:
             self.transport.select_next()
-        elif key == Gdk.KEY_ISO_Left_Tab:
-            self.transport.select_next(reverse=True)
-        elif key_name == 's':
+        # elif key == Gdk.KEY_ISO_Left_Tab:
+        #     self.transport.select_next(reverse=True)
+        elif event.text() == 's':
             self.transport.solo = True
-        elif key_name == 'm':
+        elif event.text() == 'm':
             self.transport.mute_or_unmute_selection()
             self.autosave()
 
-        elif key_name == 'q':
-            # Record
-            self.transport.stop()
-            self.autosave()
-            self.transport.start_recording()
-        elif key_name == 'w':
-            # Play back.
-            self.transport.stop()
-            self.autosave()
-            self.transport.play()
-            # Delete.
-        elif key_name == 'e':
-            self.transport.delete()
-            self.autosave()
+        self.request_draw()
 
-        self.draw()
-
-    def on_key_release_event(self, widget, event):
-        key_name = event.string
-        if key_name == 's':
+    def keyReleaseEvent(self, event):
+        if event.text() == 's':
             self.transport.solo = False
-        self.draw()
+        self.request_draw()
 
-    def on_button_press(self, widget, event):
-        if event.button == 1:
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
             self.mouse_moved = False
-            self.last_x = self.start_x = event.x
-            self.last_y = self.start_y = event.y
+            self.last_x = self.start_x = event.x()
+            self.last_y = self.start_y = event.y()
 
-            clips = self.timeline.get_collision(event.x, event.y)
+            clips = self.timeline.get_collision(event.x(), event.y())
 
             if clips:
                 if clips[0].selected:
@@ -134,13 +100,13 @@ class GUI(Gtk.Window):
                     self.clips_to_drag = clips[:1]
             else:
                 self.transport.deselect_all()
-                self.timeline.set_cursor(event.x, event.y)
+                self.timeline.set_cursor(event.x(), event.y())
                 self.dragging_cursor = True
-        self.draw()
+        self.request_draw()
 
-    def on_mouse_motion(self, widget, event):
-        dx = event.x - self.last_x
-        dy = event.y - self.last_y
+    def mouseMoveEvent(self, event):
+        dx = event.x() - self.last_x
+        dy = event.y() - self.last_y
         self.last_x += dx
         self.last_y += dy
 
@@ -154,22 +120,23 @@ class GUI(Gtk.Window):
             else:
                 # If we've moved more than 5 pixels from
                 # where we clicked, start dragging the clip.
-                dx2 = abs(event.x - self.start_x)
-                dy2 = abs(event.y - self.start_y)
+                dx2 = abs(event.x() - self.start_x)
+                dy2 = abs(event.y() - self.start_y)
                 if dx2 > 5 or dy2 > 5:
-                    self.start_x = event.x
-                    self.start_y = event.y
+                    self.start_x = event.x()
+                    self.start_y = event.y()
                     self.dragging_clips = True
         elif self.dragging_cursor:
             self.timeline.set_cursor(self.last_x, self.last_y)
 
-        self.draw()
+        # draw()
         self.mouse_moved = True
 
-    def on_button_release(self, widget, event):
-        shift_held = bool(int(event.state) & 1)
+    def mouseReleaseEvent(self, event):
+        modifiers = QGuiApplication.keyboardModifiers()
+        shift_held = bool(modifiers & QtCore.Qt.ShiftModifier)
 
-        if event.button == 1:
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
             if self.dragging_clips:
                 self.autosave()
             else:
@@ -188,23 +155,26 @@ class GUI(Gtk.Window):
             self.dragging_clips = False
             self.dragging_cursor = False
 
-        self.draw()
+        # self.draw()
 
     def autosave(self):
         self.transport.save()
 
-    def run(self):
-        try:
-            Gtk.main()
-        except KeyboardInterrupt:
-            self.close()
 
-    def close(self, *_, **__):
-        if not self.done:
-            Gtk.main_quit()
-            self.transport.stop()
-            self.transport.save()
-            self.transport.save_mix()
-            self.transport.close()
-            self.done = True
-            super(GUI, self).close()
+def run(transport):
+    # TODO: handle sys.argv here?
+    app = QtWidgets.QApplication([])
+    window = MainWindow(transport)
+    window.show()
+
+    transport.load()
+
+    app.exec()
+    # self.app.exec_()
+
+    transport.stop()
+    transport.save()
+    transport.save_mix()
+    transport.close()
+    window.done = True
+    
