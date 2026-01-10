@@ -37,7 +37,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timeline.render(pixmap)
         self.label.setPixmap(pixmap)
         self.timer = QtCore.QTimer()
-        self.timer.singleShot(100, self.draw)
+        self.timer.singleShot(50, self.draw)
 
     def request_draw(self):
         ##pos = self.transport.pos
