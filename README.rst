@@ -6,14 +6,14 @@ uses clips. You can point anywhere on the screen and press
 record. This allows you to very quickly build up a song layer by
 layer.
 
-
 Project Status
 --------------
 
+In the proces of being ported from Gtk/Cairo to Pyside3. Should be
+fully functional now, except or window resize and fullscreen.
+
 The program is fully usable but has not been properly polished for
 release.
-
-Canvas requires Python 3, pyaudio and Gtk/Cairo.
 
 I am not aware of any bugs.
 
