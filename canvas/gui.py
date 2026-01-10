@@ -191,6 +191,8 @@ def run(transport):
     window = MainWindow(transport)
     window.show()
 
+    transport.load()
+
     app.exec()
     # self.app.exec_()
 
