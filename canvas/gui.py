@@ -30,13 +30,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mouse_moved = False
         self.last_cursor_pos = 0
 
-        # These two seem to do the same thing.
-        # self.fullscreen()
-        # self.maximize()
-
-        ## self.area.add_events(Gdk.EventMask.ALL_EVENTS_MASK)
-        # self.area.connect('draw', self.on_draw)
-
         self.draw()
 
     def draw(self):
@@ -49,22 +42,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def request_draw(self):
         ##pos = self.transport.pos
         ##if pos != self.last_cursor_pos:
-        self.draw()
-        
+        # self.draw()
+        pass
+ 
     def on_timer(self):
         self.last_cursor_pos = pos
         # GObject.timeout_add(100, self.on_timer)        
-
-    # def draw(self):
-    #     self.area.queue_draw()
-
-    def on_draw(self, area, context):
-        raise NotImplemented()
-
-        width = area.get_allocated_width()
-        height = area.get_allocated_height()
-        context.set_source_surface(self.timeline.render(width, height))
-        context.paint()
 
     def keyPressEvent(self, event):
         key_name = event.text()
@@ -91,21 +74,20 @@ class MainWindow(QtWidgets.QMainWindow):
             self.transport.select_next()
         # elif key == Gdk.KEY_ISO_Left_Tab:
         #     self.transport.select_next(reverse=True)
-        elif event.text == 's':
+        elif event.text() == 's':
             self.transport.solo = True
-        elif event.text == 'm':
+        elif event.text() == 'm':
             self.transport.mute_or_unmute_selection()
             self.autosave()
 
         self.request_draw()
 
     def keyReleaseEvent(self, event):
-        if event.text == 's':
+        if event.text() == 's':
             self.transport.solo = False
         self.request_draw()
 
     def mousePressEvent(self, event):
-        # TODO: why is this not found?
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
             self.mouse_moved = False
             self.last_x = self.start_x = event.x()
@@ -150,7 +132,7 @@ class MainWindow(QtWidgets.QMainWindow):
         elif self.dragging_cursor:
             self.timeline.set_cursor(self.last_x, self.last_y)
 
-        self.draw()
+        # draw()
         self.mouse_moved = True
 
     def mouseReleaseEvent(self, event):
@@ -179,7 +161,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.dragging_clips = False
             self.dragging_cursor = False
 
-        self.draw()
+        # self.draw()
 
     def autosave(self):
         self.transport.save()
