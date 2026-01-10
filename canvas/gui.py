@@ -1,5 +1,3 @@
-# https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/QWidget.html
-# https://doc.qt.io/qtforpython-6/examples/example_quick_scenegraph_openglunderqml.html#example-quick-scenegraph-openglunderqml
 from PySide6 import QtWidgets, QtGui, QtCore
 from PySide6.QtGui import QGuiApplication
 from .timeline import Timeline  # noqa: E402

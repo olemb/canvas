@@ -1,4 +1,3 @@
-# https://www.pythonguis.com/tutorials/pyside6-bitmap-graphics/
 from PySide6 import QtGui
 from .clips import get_start_and_end
 
