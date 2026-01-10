@@ -136,8 +136,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mouse_moved = True
 
     def mouseReleaseEvent(self, event):
-        return
-
         # TODO: implement:
         ## shift_held = bool(int(event.state) & 1)
         shift_held = False
