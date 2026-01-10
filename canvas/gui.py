@@ -46,10 +46,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.draw()
         pass
  
-    def on_timer(self):
-        self.last_cursor_pos = pos
-        # GObject.timeout_add(100, self.on_timer)        
-
     def keyPressEvent(self, event):
         key_name = event.text()
         key = event.key()
