@@ -3,6 +3,12 @@ from PySide6.QtGui import QGuiApplication
 from .timeline import Timeline  # noqa: E402
 from .transport import Transport  # noqa: E402
 
+
+def shift_held():
+    modifiers = QGuiApplication.keyboardModifiers()
+    return bool(modifiers & QtCore.Qt.ShiftModifier)
+
+
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, transport):
         super().__init__()
@@ -60,9 +66,9 @@ class MainWindow(QtWidgets.QMainWindow):
         elif key == qt.Key_Space:
             self.transport.toggle_playback()
         elif key == qt.Key_Tab:
+            self.transport.select_next(reverse=True)
+        elif key == qt.Key_Backtab:
             self.transport.select_next()
-        # elif key == Gdk.KEY_ISO_Left_Tab:
-        #     self.transport.select_next(reverse=True)
         elif event.text() == 's':
             self.transport.solo = True
         elif event.text() == 'm':
@@ -120,9 +126,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mouse_moved = True
 
     def mouseReleaseEvent(self, event):
-        modifiers = QGuiApplication.keyboardModifiers()
-        shift_held = bool(modifiers & QtCore.Qt.ShiftModifier)
-
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
             if self.dragging_clips:
                 self.autosave()
@@ -132,7 +135,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     # held down.
                     clip = self.clips_to_drag[0]
 
-                    if shift_held:
+                    if shift_held():
                         clip.selected = not clip.selected
                     else:
                         self.transport.deselect_all()
