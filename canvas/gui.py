@@ -38,12 +38,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.timer = QtCore.QTimer()
         self.timer.singleShot(50, self.draw)
 
-    def request_draw(self):
-        ##pos = self.transport.pos
-        ##if pos != self.last_cursor_pos:
-        # self.draw()
-        pass
- 
     def keyPressEvent(self, event):
         key_name = event.text()
         key = event.key()
@@ -75,12 +69,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.transport.mute_or_unmute_selection()
             self.autosave()
 
-        self.request_draw()
-
     def keyReleaseEvent(self, event):
         if event.text() == 's':
             self.transport.solo = False
-        self.request_draw()
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.MouseButton.LeftButton:
@@ -100,7 +91,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.transport.deselect_all()
                 self.timeline.set_cursor(event.x(), event.y())
                 self.dragging_cursor = True
-        self.request_draw()
 
     def mouseMoveEvent(self, event):
         dx = event.x() - self.last_x
@@ -127,7 +117,6 @@ class MainWindow(QtWidgets.QMainWindow):
         elif self.dragging_cursor:
             self.timeline.set_cursor(self.last_x, self.last_y)
 
-        # draw()
         self.mouse_moved = True
 
     def mouseReleaseEvent(self, event):
@@ -152,8 +141,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.clips_to_drag = None
             self.dragging_clips = False
             self.dragging_cursor = False
-
-        # self.draw()
 
     def autosave(self):
         self.transport.save()
