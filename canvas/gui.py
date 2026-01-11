@@ -130,16 +130,16 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.dragging_clips:
                 self.autosave()
             else:
-                if self.clips_to_drag:
-                    # Deselect other clips unless shift is
-                    # held down.
-                    clip = self.clips_to_drag[0]
-
+                clips = self.timeline.get_collision(event.x(), event.y())
+                if len(clips):
+                    clip = clips[0]
                     if shift_held():
                         clip.selected = not clip.selected
                     else:
                         self.transport.deselect_all()
-                        self.clips_to_drag[0].selected = True
+                        clip.selected = True
+                else:
+                    self.transport.deselect_all()
 
             self.clips_to_drag = None
             self.dragging_clips = False
