@@ -42,7 +42,6 @@ class Timeline:
     def render(self, pixmap):
         self.pixmap = pixmap
         self.painter = QtGui.QPainter(pixmap)
-        self.pen = QtGui.QPen()
 
         self.width = pixmap.width()
         self.height = pixmap.height()
